@@ -1,0 +1,76 @@
+<?php
+$translate = $this->plugin('translate');
+$escape = $this->plugin('escapeHtml');
+$this->htmlElement('body')->appendAttribute('class', 'items show');
+if ($owner = $item->owner()) {
+    $ownerText = $escape($item->owner()->name());
+} else {
+    $ownerText = $translate('[no owner]');
+}
+
+$sectionNavs = [
+    'item-metadata' => $translate('Metadata'),
+    'item-linked' => $translate('Linked resources'),
+];
+
+$itemMedia = $item->media();
+?>
+
+<div class="sidebar active">
+    <?php echo $this->thumbnail($item, 'square'); ?>
+    <div class="meta-group">
+        <h4><?php echo $translate('ID'); ?></h4>
+        <div class="value"><?php echo $escape($item->id()); ?></div>
+    </div>
+    <?php 
+    $response = $this->api()->search('pid_items', ['item_id' => $item->id()]) ?: '';
+    $PIDcontent = $response->getContent();
+    ?>
+    <?php if (!empty($PIDcontent)): ?>
+    <?php $PIDrecord = $PIDcontent[0]; ?>
+    <div class="meta-group">
+        <h4><?php echo $translate('Persistent Identifier'); ?></h4>
+        <div class="value"><?php echo $PIDrecord->getPID(); ?></div>
+    </div>
+    <?php endif; ?> 
+    <div class="meta-group">
+        <h4><?php echo $translate('Visibility'); ?></h4>
+        <div class="value"><?php echo ($item->isPublic()) ? $escape($translate('Public')) : $escape($translate('Private')); ?></div>
+    </div>
+    <?php $itemsets = $item->itemSets(); ?>
+    <?php if (count($itemsets) > 0): ?>
+    <div class="meta-group">
+        <h4><?php echo $translate('Item sets'); ?></h4>
+        <?php foreach ($itemsets as $itemset): ?>
+        <div class="value item-sets"><?php echo $itemset->link($itemset->displayTitle()); ?></div>
+        <?php endforeach; ?>
+    </div>
+    <?php endif; ?>
+    <?php $sites = $item->sites(); ?>
+    <?php if (count($sites) > 0): ?>
+    <div class="meta-group">
+        <h4><?php echo $translate('Sites'); ?></h4>
+        <?php foreach ($sites as $site): ?>
+        <div class="value item-sets"><?php echo $site->link($site->title()); ?></div>
+        <?php endforeach; ?>
+    </div>
+    <?php endif; ?>
+    <div class="meta-group">
+        <h4><?php echo $translate('Created'); ?></h4>
+        <div class="value"><?php echo $escape($this->i18n()->dateFormat($item->created())); ?></div>
+    </div>
+    <div class="meta-group">
+        <h4><?php echo $translate('Owner'); ?></h4>
+        <div class="value"><?php echo $ownerText; ?></div>
+    </div>
+    <?php if ($itemMedia): ?>
+    <div class="meta-group">
+        <h4><?php echo $translate('Media'); ?> (<?php echo count($itemMedia); ?>)</h4>
+        <?php foreach ($itemMedia as $media): ?>
+        <div class="value">
+            <?php echo $media->linkPretty(); ?>
+        </div>
+        <?php endforeach; ?>
+    </div>
+    <?php endif; ?>
+</div>

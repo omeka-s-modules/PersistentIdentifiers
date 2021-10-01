@@ -1,0 +1,43 @@
+<?php
+$this->headLink()->appendStylesheet($this->assetUrl('css/persistent-identifiers.css', 'PersistentIdentifiers'));
+$this->headScript()->appendFile($this->assetUrl('js/pid-form.js', 'PersistentIdentifiers'));
+$translate = $this->plugin('translate');
+?>
+<div class="pid-form-element"
+    <?php
+    // Look for/return existing PID
+    $response = $this->api()->search('pid_items', ['item_id' => $itemID]) ?: '';
+    $content = $response->getContent();
+    if (!empty($content)) {
+        $PIDrecord = $content[0];
+        $PIDvalue = $PIDrecord->getPID();
+        echo 'item-pid="' . $PIDvalue . '"'; 
+    } else {
+        $PIDvalue = '';
+    }
+    ?>
+    pid-edit-url="<?php echo $this->escapeHtml($this->url('admin/persistent-identifiers/pid-edit')); ?>"
+    item-api-url="<?php echo $this->escapeHtml($itemAPIURL); ?>"
+    item-id="<?php echo $itemID; ?>">
+    <div class="pid-display"></div>
+    <button type="button" class="pid-form-mint"><?php echo $translate('Mint PID'); ?></button>
+    <button type="button" class="pid-form-remove red button inactive"><?php echo $translate('Remove PID'); ?></button>
+</div>
+<div id="sidebar-remove-pid" class="sidebar">
+    <?php echo $this->hyperlink('', '#', [
+        'class' => 'sidebar-close o-icon-close',
+        'title' => $translate('Close'),
+    ]); ?>
+    <div class="sidebar-content">
+        <div id="pid-delete-confirm">
+            <h3><?php echo $translate('Remove PID'); ?></h3>
+            <p class="error"><?php echo sprintf(
+                $translate('<strong>Warning</strong>: this action will remove <strong>%s</strong> from item <strong>%s</strong>, breaking any incoming Omeka URI links, and cannot be undone.'),
+                $PIDvalue,
+                $itemID
+            ); ?></p>
+            <p><?php echo $translate('Are you sure you would like to remove the PID from this item?'); ?></p>
+            <button type="button" class="pid-form-delete"><?php echo $translate('Confirm Remove PID'); ?></button>
+        </div>
+    </div>
+</div>

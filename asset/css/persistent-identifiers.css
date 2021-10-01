@@ -1,0 +1,18 @@
+#pid-delete-confirm .pid-form-delete {
+    background-color: #A91919;
+    color: #fff;
+    box-shadow: none;
+    width: 100%;
+}
+
+.pid-form-element .active {
+    display: block;
+}
+
+.pid-form-element .inactive {
+    display: none;
+}
+
+.pid-form-element button.active {
+    display: inline-block;
+}
