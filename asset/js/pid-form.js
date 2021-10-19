@@ -6,12 +6,12 @@ $(document).ready(function () {
     const hide = selector => selectingElement.find(selector).addClass('inactive');
 
     selectingElement = $('#content').find('.pid-form-element');
-    itemID = selectingElement.attr('item-id');
-    pidEditURL = selectingElement.attr('pid-edit-url');
+    itemID = selectingElement.data('itemId');
+    pidEditURL = selectingElement.data('pidEditUrl');
     
     // Grab and display PID attribute, if it exists
-    if (selectingElement.attr('item-pid')) {
-        pidValue = selectingElement.attr('item-pid');
+    if (selectingElement.data('itemPid')) {
+        pidValue = selectingElement.data('itemPid');
         selectingElement.find('.pid-display').text(pidValue);
         show('.pid-form-remove');
         hide('.pid-form-mint');
@@ -19,7 +19,7 @@ $(document).ready(function () {
     
     // Handle the button that mints/creates a PID via selected service and assigns to object.
     $('#content').on('click', '.pid-form-mint', function (e) {
-        pidTarget = selectingElement.attr('item-api-url');
+        pidTarget = selectingElement.data('itemApiUrl');
         mintPID(pidEditURL, pidTarget, itemID);
     });
     
@@ -30,7 +30,7 @@ $(document).ready(function () {
     
     // Handle the button that removes PID value from item.
     $('#content').on('click', '.pid-form-delete', function (e) {
-        toRemovePID = selectingElement.attr('item-pid');
+        toRemovePID = selectingElement.data('itemPid');
         deletePID(pidEditURL, toRemovePID, itemID);
     });
     
@@ -48,7 +48,7 @@ $(document).ready(function () {
             },
             success: function(data) {
                 selectingElement.find('.pid-display').text(data);
-                selectingElement.attr('item-pid', data);
+                selectingElement.data('itemPid', data);
                 show('.pid-form-remove');
                 hide('.pid-form-mint');
             },
@@ -72,7 +72,7 @@ $(document).ready(function () {
             },
             success: function(data) {
                 Omeka.closeSidebar($('#sidebar-remove-pid'));
-                // selectingElement.find('.pid-display').empty();
+                selectingElement.removeAttr('data-item-pid');
                 selectingElement.find('.pid-display').text(data);
                 show('.pid-form-mint');
                 hide('.pid-form-remove');

@@ -11,14 +11,14 @@ $translate = $this->plugin('translate');
     if (!empty($content)) {
         $PIDrecord = $content[0];
         $PIDvalue = $PIDrecord->getPID();
-        echo 'item-pid="' . $PIDvalue . '"'; 
+        echo 'data-item-pid="' . $PIDvalue . '"'; 
     } else {
         $PIDvalue = '';
     }
     ?>
-    pid-edit-url="<?php echo $this->escapeHtml($this->url('admin/persistent-identifiers/pid-edit')); ?>"
-    item-api-url="<?php echo $this->escapeHtml($itemAPIURL); ?>"
-    item-id="<?php echo $itemID; ?>">
+    data-pid-edit-url="<?php echo $this->escapeHtml($this->url('admin/persistent-identifiers/pid-edit')); ?>"
+    data-item-api-url="<?php echo $this->escapeHtml($itemAPIURL); ?>"
+    data-item-id="<?php echo $itemID; ?>">
     <div class="pid-display"></div>
     <button type="button" class="pid-form-mint"><?php echo $translate('Mint PID'); ?></button>
     <button type="button" class="pid-form-remove red button inactive"><?php echo $translate('Remove PID'); ?></button>
