@@ -83,6 +83,15 @@ class Module extends AbstractModule
     public function handleShowItemSidebar(Event $event)
     {
         $view = $event->getTarget();
-        echo $view->partial('persistent-identifiers/omeka/admin/item/show');
+        $api = $this->getServiceLocator()->get('Omeka\ApiManager');
+        $response = $api->search('pid_items', ['item_id' => $view->item->id()]) ?: '';
+        $PIDcontent = $response->getContent();
+        if (!empty($PIDcontent)) {
+            $PIDrecord = $PIDcontent[0];
+            echo '<div class="meta-group">';
+            echo '<h4>' . $view->translate('Persistent Identifier') . '</h4>';
+            echo '<div class="value">' . $PIDrecord->getPID() . '</div>';
+            echo '</div>';
+        }
     }
 }
