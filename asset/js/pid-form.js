@@ -47,12 +47,17 @@ $(document).ready(function () {
                 'itemID' : itemID
             },
             success: function(data) {
-                selectingElement.find('.pid-display').text(data);
-                selectingElement.data('itemPid', data);
-                show('.pid-form-remove');
-                hide('.pid-form-mint');
+                if (!data) {
+                    // empty data means PID service connection error
+                    selectingElement.find('.pid-display').text(Omeka.jsTranslate('Could not mint PID, check credentials/settings.'));
+                } else {
+                    selectingElement.find('.pid-display').text(data);
+                    selectingElement.data('itemPid', data);
+                    show('.pid-form-remove');
+                    hide('.pid-form-mint');
+                }
             },
-            failure: function(errMsg) {
+            error: function(errMsg) {
                 selectingElement.find('.pid-display').text(errMsg);
             }
         });
@@ -71,11 +76,17 @@ $(document).ready(function () {
                 'toRemovePID' : toRemovePID
             },
             success: function(data) {
-                Omeka.closeSidebar($('#sidebar-remove-pid'));
-                selectingElement.removeAttr('data-item-pid');
-                selectingElement.find('.pid-display').text(data);
-                show('.pid-form-mint');
-                hide('.pid-form-remove');
+                if (!data) {
+                    Omeka.closeSidebar($('#sidebar-remove-pid'));
+                    // empty data means PID service connection error
+                    selectingElement.find('.pid-display').text(Omeka.jsTranslate('Could not delete PID, check credentials/settings.'));
+                } else {
+                    Omeka.closeSidebar($('#sidebar-remove-pid'));
+                    selectingElement.removeAttr('data-item-pid');
+                    selectingElement.find('.pid-display').text('');
+                    show('.pid-form-mint');
+                    hide('.pid-form-remove');
+                }
             },
             failure: function(errMsg) {
                 selectingElement.find('.pid-display').text(errMsg);

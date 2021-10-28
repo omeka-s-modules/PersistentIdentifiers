@@ -38,8 +38,8 @@ class ConfigForm extends Form
             'options' => [
                 'label' => 'PID Service',
                 'value_options' => [
-                    '0' => 'EZID (ARKs)',
-                    '1' => 'DataCite (DOIs)',
+                    'ezid' => 'EZID (ARKs)',
+                    'datacite' => 'DataCite (DOIs)',
                 ],
             ],
             'attributes' => [

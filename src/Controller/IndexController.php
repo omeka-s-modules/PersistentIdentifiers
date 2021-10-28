@@ -32,13 +32,20 @@ class IndexController extends AbstractActionController
     {
         $view = new ViewModel;
         $form = $this->getForm(ConfigForm::class);
+        $form->setData([
+            'assign_all' => $this->settings->get('assign_all'),
+            'assign_existing' => $this->settings->get('assign_existing'),
+            'pid_service' => $this->settings->get('pid_service'),
+        ]);
         $view->setVariable('form', $form);
+        
         if ($this->getRequest()->isPost()) {
-            $data = $this->params()->fromPost();
-            $form->setData($data);
+            $form->setData($this->params()->fromPost());
             if ($form->isValid()) {
-            } else {
-                $this->messenger()->addError('There was an error during validation'); // @translate
+                $formData = $form->getData();
+                $this->settings->set('assign_all', $formData['assign_all']);
+                $this->settings->set('assign_existing', $formData['assign_existing']);
+                $this->settings->set('pid_service', $formData['pid_service']);
             }
         }
 
@@ -61,23 +68,13 @@ class IndexController extends AbstractActionController
             if ($form->isValid()) {
                 $formData = $form->getData();
 
-                $this->settings->set('pid_editAPI', 'https://ezid.cdlib.org/shoulder/');
-                $this->settings->set('pid_authAPI', 'https://ezid.cdlib.org/login');
-                $this->settings->set('pid_updateAPI', 'https://ezid.cdlib.org/id/');
-                $this->settings->set('pid_target_prefix', '_target: ');
                 $this->settings->set('pid_shoulder', $formData['pid_shoulder']);
                 $this->settings->set('pid_username', $formData['ezid_username']);
                 $this->settings->set('pid_password', $formData['ezid_password']);
-
-                return $view;
-
-            } else {
-                $this->messenger()->addError('Incorrect NAAN Shoulder and/or credentials'); // @translate
             }
         }
 
         return $view;
-
     }
     
     public function pidEditAction()
@@ -98,19 +95,12 @@ class IndexController extends AbstractActionController
         $editor->setPidAuthAPI($this->settings->get('pid_authAPI'));
         $editor->setPidUpdateAPI($this->settings->get('pid_updateAPI'));
         
-        // Add prefix to target, if required by PID service
-        if ($this->settings->get('pid_target_prefix')) {
-            $editor->setPidTargetPrefix($this->settings->get('pid_target_prefix'));
-        }
-        
         if (isset($_POST['toRemovePID'])) {
-            // Delete PID from DB and remove target via PID API
-            $target = '';
-            $editor->removePID($target, $_POST['toRemovePID'], $itemID);
+            $editor->removePID($this->services, $_POST['toRemovePID'], $itemID);
             $this->messenger()->addSuccess('PID removed');
         } else {
             // Mint and store new PID
-            $editor->mintPID($target, $itemID);
+            $editor->mintPID($this->services, $target, $itemID);
         }
 
         return $response->setContent($editor->getValue());

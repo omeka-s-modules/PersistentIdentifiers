@@ -13,6 +13,7 @@ class PIDEditor extends Element
     
     protected $api;
     
+    // Add PID to database
     public function storePID($pid, $itemID)
     {        
         $json = [
@@ -33,6 +34,7 @@ class PIDEditor extends Element
         }        
     }
     
+    // Delete PID from database
     public function deletePID($itemID)
     {        
         // Ensure PID record already exists
@@ -55,80 +57,56 @@ class PIDEditor extends Element
         // and reject if HTTP error?
     }
     
-    public function mintPID($pidTarget, $itemID)
+    public function getPIDService($services)
+    {
+        $pidSelector = $services->get('PersistentIdentifiers\PIDSelectorManager');
+        $pidSelectedService = $services->get('Omeka\Settings')->get('pid_service');
+        return $pidSelector->get($pidSelectedService);
+    }
+    
+    public function mintPID($services, $pidTarget, $itemID)
     {   
-        // TODO: End session after item save
-        $sessionCookie = $this->startPIDSession();
-        $shoulder = $this->pidEditAPI . $this->pidShoulder;
-        // append prefix to pid target, if any
-        $target = isset($this->pidTargetPrefix) ? $this->pidTargetPrefix . $pidTarget : $pidTarget;
+        $pidService = $this->getPIDService($services);
 
-        $request = $this->client
-            ->setUri($shoulder)
-            ->setMethod('POST')
-            ->setRawBody($target);
-        $request->getRequest()->getHeaders()->addHeaderLine('Content-type: text/plain')
-                                            ->addHeaderLine('Cookie: ' . $sessionCookie);
-        $response = $request->send();
-        if (!$response->isSuccess()) {
-            $this->setValue("Could not connect to PID Service, check settings. " . $response->getBody()); // @translate
+        // TODO: End session after item save
+        $sessionCookie = $pidService->connect($this->pidUsername, $this->pidPassword);
+        if (!$sessionCookie) {
+            $this->setValue('');
+            return;
+        }
+
+        $newPID = $pidService->mint($sessionCookie, $this->pidShoulder, $pidTarget);
+        
+        if (!$newPID) {
+            $this->setValue('');
         } else {
-            // TODO: make more generic
-            $newPID = str_replace('success: ', '', $response->getBody());
-            
             $this->setValue($newPID);
             
             // Save to DB
-            $this->storePID($newPID, $itemID);
-            
+            $this->storePID($newPID, $itemID);        
         }
     }
     
-    public function removePID($pidTarget, $toRemovePID, $itemID)
+    public function removePID($services, $toRemovePID, $itemID)
     {   
+        $pidService = $this->getPIDService($services);
+
         // TODO: End session after item save
-        $sessionCookie = $this->startPIDSession();
-        $shoulder = $this->pidUpdateAPI . $toRemovePID;
-        // append prefix to (empty) pid target, if any
-        $target = isset($this->pidTargetPrefix) ? $this->pidTargetPrefix . $pidTarget : $pidTarget;
-        
-        $request = $this->client
-            ->setUri($shoulder)
-            ->setMethod('PUT')
-            ->setRawBody($target);
-        $request->getRequest()->getHeaders()->addHeaderLine('Content-type: text/plain')
-                                            ->addHeaderLine('Cookie: ' . $sessionCookie);
-        // $request->getRequest()->getQuery()->setQuery('update_if_exists=yes');
-        $request->getRequest()->setQuery(new Parameters(['update_if_exists' => 'yes']));
-        $response = $request->send();
-        if (!$response->isSuccess()) {
-            $this->setValue("Could not connect to PID Service, check settings. " . $response->getBody()); // @translate
+        $sessionCookie = $pidService->connect($this->pidUsername, $this->pidPassword);
+        if (!$sessionCookie) {
+            $this->setValue('');
+            return;
+        }
+
+        $deletedPID = $pidService->delete($sessionCookie, $toRemovePID);
+
+        if (!$deletedPID) {
+            $this->setValue('');
         } else {            
+            $this->setValue('success');
+            
             // Delete from DB
             $this->deletePID($itemID);
-        }
-    }
-    
-    // Logs in to PID API and returns access token
-    public function startPIDSession()
-    {
-        $uri = $this->pidAuthAPI;
-        $username = $this->pidUsername;
-        $password = $this->pidPassword;
-        $request = $this->client
-            ->setUri($uri)
-            ->setMethod('GET')
-            ->setAuth($username, $password);
-        $response = $request->send();
-        if (!$response->isSuccess()) {
-            return;
-        } else {            
-            // Retrieve sessionID cookie
-            $cookieString = $response->getHeaders()->toArray()['Set-Cookie'][0];
-            $cookieArray = explode(';', $cookieString);
-            $sessionID = $cookieArray[0];
-            
-            return $sessionID;
         }
     }
     

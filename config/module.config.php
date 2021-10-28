@@ -10,6 +10,16 @@ return [
             ],
         ],
     ],
+    'service_manager' => [
+        'factories' => [
+            'PersistentIdentifiers\PIDSelectorManager' => PersistentIdentifiers\Service\PIDSelector\ManagerFactory::class,
+        ],
+    ],
+    'pid_services' => [
+        'factories' => [
+            'ezid' => PersistentIdentifiers\Service\PIDSelector\EzidFactory::class,
+        ],
+    ],
     'api_adapters' => [
         'invokables' => [
             'pid_items' => 'PersistentIdentifiers\Api\Adapter\PIDItemAdapter',
