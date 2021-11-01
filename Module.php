@@ -2,6 +2,7 @@
 namespace PersistentIdentifiers;
 
 use Omeka\Module\AbstractModule;
+use Omeka\Form\Element\ResourceSelect;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\View\Renderer\PhpRenderer;
 use Laminas\Mvc\Controller\AbstractController;

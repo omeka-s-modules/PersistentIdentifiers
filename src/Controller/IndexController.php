@@ -3,7 +3,6 @@ namespace PersistentIdentifiers\Controller;
 
 use PersistentIdentifiers\Form\ConfigForm;
 use PersistentIdentifiers\Form\EZIDForm;
-use PersistentIdentifiers\Form\Element\PIDEditor;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\View\Model\ViewModel;
@@ -25,7 +24,11 @@ class IndexController extends AbstractActionController
     public function __construct(Settings $settings, ServiceLocatorInterface $services)
     {
         $this->settings = $settings;
+        $this->pidUsername = $this->settings->get('pid_username');
+        $this->pidPassword = $this->settings->get('pid_password');
+        $this->pidShoulder = $this->settings->get('pid_shoulder');
         $this->services = $services;
+        $this->api = $this->services->get('Omeka\ApiManager');
     }
     
     public function indexAction()
@@ -77,33 +80,110 @@ class IndexController extends AbstractActionController
         return $view;
     }
     
+    // Mint and/or remove PID (called via Ajax from pid-form)
     public function pidEditAction()
     {        
         $response = $this->getResponse();
         $target = isset($_POST['target']) ? $_POST['target'] : null;
         $itemID = isset($_POST['itemID']) ? $_POST['itemID'] : null;
-        
-        // Build an editor object and either retrieve or generate PID
-        // pointing to $target
-        $editor = new PIDEditor();
-        $editor->setClient($this->services->get('Omeka\HttpClient'));
-        $editor->setApi($this->services->get('Omeka\ApiManager'));
-        $editor->setPidUsername($this->settings->get('pid_username'));
-        $editor->setPidPassword($this->settings->get('pid_password'));
-        $editor->setPidShoulder($this->settings->get('pid_shoulder'));
-        $editor->setPidEditAPI($this->settings->get('pid_editAPI'));
-        $editor->setPidAuthAPI($this->settings->get('pid_authAPI'));
-        $editor->setPidUpdateAPI($this->settings->get('pid_updateAPI'));
+
+        $pidSelector = $this->services->get('PersistentIdentifiers\PIDSelectorManager');
+        $pidSelectedService = $this->settings->get('pid_service');
+        $pidService = $pidSelector->get($pidSelectedService);
         
         if (isset($_POST['toRemovePID'])) {
-            $editor->removePID($this->services, $_POST['toRemovePID'], $itemID);
-            $this->messenger()->addSuccess('PID removed');
+            $deletedPID = $this->removePID($pidService, $_POST['toRemovePID'], $itemID);
+            return $response->setContent($deletedPID);
         } else {
             // Mint and store new PID
-            $editor->mintPID($this->services, $target, $itemID);
+            $mintedPID = $this->mintPID($pidService, $target, $itemID);
+            return $response->setContent($mintedPID);
         }
-
-        return $response->setContent($editor->getValue());
     }
 
+    // Mint (create) PID via PID Service API and store in DB
+    public function mintPID($pidService, $pidTarget, $itemID)
+    {
+        // TODO: End session after item save
+        $sessionCookie = $pidService->connect($this->pidUsername, $this->pidPassword);
+        if (!$sessionCookie) {
+            return null;
+        }
+
+        $newPID = $pidService->mint($sessionCookie, $this->pidShoulder, $pidTarget);
+
+        if (!$newPID) {
+            return null;
+        } else {
+            // Save to DB
+            $this->storePID($newPID, $itemID);
+
+            return $newPID;
+        }
+    }
+
+    // Remove PID via PID Service API and delete from DB
+    public function removePID($pidService, $toRemovePID, $itemID)
+    {
+        // TODO: End session after item save
+        $sessionCookie = $pidService->connect($this->pidUsername, $this->pidPassword);
+        if (!$sessionCookie) {
+            return null;
+        }
+
+        $deletedPID = $pidService->delete($sessionCookie, $toRemovePID);
+
+        if (!$deletedPID) {
+            return null;
+        } else {
+            // Delete from DB
+            $this->deletePID($itemID);
+            $this->messenger()->addSuccess('PID removed');
+            return 'success';
+        }
+    }
+
+    // Add PID to Omeka database
+    public function storePID($pid, $itemID)
+    {
+        $json = [
+            'o:item' => ['o:id' => $itemID],
+            'pid' => $pid,
+        ];
+
+        // See if PID record already exists
+        $response = $this->api->search('pid_items', ['item_id' => $itemID]);
+        $content = $response->getContent();
+        if (empty($content)) {
+            // Create new PID record in DB
+            $response = $this->api->create('pid_items', $json);
+        } else {
+            // Update PID record in DB
+            $PIDrecord = $content[0];
+            $response = $this->api->update('pid_items', $PIDrecord->id(), $json);
+        }
+    }
+
+    // Delete PID from Omeka database
+    public function deletePID($itemID)
+    {
+        // Ensure PID record already exists
+        $response = $this->api->search('pid_items', ['item_id' => $itemID]);
+        $content = $response->getContent();
+        if (empty($content)) {
+            return 'No PID record found in database!';
+        } else {
+            // Delete PID record in DB
+            $PIDrecord = $content[0];
+            $this->api->delete('pid_items', $PIDrecord->id());
+        }
+    }
+
+    public function extractPID($item)
+    {
+        // TODO: Look for PID values in designated metadata fields
+        // store & update target via PID API if found
+        // RegEx to look for specific syntax, or just take everything
+        // and reject if HTTP error?
+    }
 }
