@@ -35,22 +35,23 @@ class Module extends AbstractModule
 
     public function attachListeners(SharedEventManagerInterface $sharedEventManager)
     {
-        $sharedEventManager->attach(
-            'Omeka\Form\ResourceForm',
-            'form.add_elements',
-            [$this, 'addPIDElement']
-        );
         
         $sharedEventManager->attach(
             'Omeka\Controller\Admin\Item',
             'view.edit.form.before',
-            [$this, 'handleViewFormBefore']
+            [$this, 'handleEditFormBefore']
         );
         
         $sharedEventManager->attach(
             'Omeka\Controller\Admin\Item',
             'view.add.form.before',
-            [$this, 'handleViewFormBefore']
+            [$this, 'handleAddFormBefore']
+        );
+
+        $sharedEventManager->attach(
+            '*',
+            'api.create.post',
+            [$this, 'handleAddFormAfter']
         );
         
         $sharedEventManager->attach(
@@ -60,24 +61,23 @@ class Module extends AbstractModule
         );
     }
     
-    public function addPIDElement($event)
-    {
-        $form = $event->getTarget();
-        $settings = $this->getServiceLocator()->get('Omeka\Settings');
-        $form->add([
-                    'name' => 'o:pid[o:id]',
-                    'type' => ModuleElement\PIDEditor::class,
-                    'options' => [
-                        'label' => 'Persistent Identifier', // @translate
-                        'info' => 'Mint & assign PID from chosen service. (Note: PID is immediately assigned to item)', // @translate
-                    ],
-                ]);        
-    }
-    
-    public function handleViewFormBefore(Event $event)
+    public function handleEditFormBefore(Event $event)
     {
         $view = $event->getTarget();
-        echo $view->partial('persistent-identifiers/common/resource-fields');
+        echo $view->partial('persistent-identifiers/common/resource-fields-edit');
+    }
+    
+    public function handleAddFormBefore(Event $event)
+    {
+        $view = $event->getTarget();
+        echo $view->partial('persistent-identifiers/common/resource-fields-add');
+    }
+
+    public function handleAddFormAfter(Event $event)
+    {
+        $addObject = $event->getParam('response')->getContent();
+        $adapter = $event->getTarget();
+        $addObjectRepresentation = $adapter->getRepresentation($addObject);
     }
     
     public function handleShowItemSidebar(Event $event)
