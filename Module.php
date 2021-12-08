@@ -75,9 +75,49 @@ class Module extends AbstractModule
 
     public function handleAddFormAfter(Event $event)
     {
+        $services = $this->getServiceLocator();
+        $settings = $services->get('Omeka\Settings');
+        $api = $services->get('Omeka\ApiManager');
+
+        $requestContent = $event->getParam('request')->getContent();
         $addObject = $event->getParam('response')->getContent();
         $adapter = $event->getTarget();
         $addObjectRepresentation = $adapter->getRepresentation($addObject);
+
+        // If PID element checked, mint and store new PID
+        if (!empty($requestContent['o:pid']['o:id'])) {
+            // Set selected PID service
+            $pidSelector = $services->get('PersistentIdentifiers\PIDSelectorManager');
+            $pidSelectedService = $settings->get('pid_service');
+            $pidService = $pidSelector->get($pidSelectedService);
+
+            $pidUsername = $settings->get('pid_username');
+            $pidPassword = $settings->get('pid_password');
+            $pidShoulder = $settings->get('pid_shoulder');
+            $pidTarget = $addObjectRepresentation->apiUrl();
+            $itemID = $addObjectRepresentation->id();
+
+            // TODO: End session after item save
+            $sessionCookie = $pidService->connect($pidUsername, $pidPassword);
+            if (!$sessionCookie) {
+                return;
+            }
+
+            // Mint and store new PID
+            $newPID = $pidService->mint($sessionCookie, $pidShoulder, $pidTarget);
+
+            if (!$newPID) {
+                return;
+            } else {
+                // Save to DB
+                $json = [
+                    'o:item' => ['o:id' => $itemID],
+                    'pid' => $newPID,
+                ];
+
+                $response = $api->create('pid_items', $json);
+            }
+        }
     }
     
     public function handleShowItemSidebar(Event $event)
