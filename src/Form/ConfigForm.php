@@ -25,7 +25,7 @@ class ConfigForm extends Form
         ]);
         
         $this->add([
-            'name' => 'assign_all',
+            'name' => 'pid_assign_all',
             'type' => 'checkbox',
             'options' => [
                 'label' => 'Assign PIDs to new items', // @translate
@@ -37,7 +37,7 @@ class ConfigForm extends Form
         ]);
 
         $this->add([
-            'name' => 'assign_existing',
+            'name' => 'pid_assign_existing',
             'type' => 'text',
             'options' => [
                 'label' => 'Fields with existing PIDs', // @translate

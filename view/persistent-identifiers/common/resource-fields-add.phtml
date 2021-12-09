@@ -5,14 +5,28 @@ $resourceTemplateSelect = $form->get('o:resource_template[o:id]');
 $resourceClassSelect = $form->get('o:resource_class[o:id]');
 $thumbnailInput = $form->get('o:thumbnail[o:id]');
 $ownerSelect = $form->get('o:owner[o:id]');
-$form->add([
-            'name' => 'o:pid[o:id]',
-            'type' => 'checkbox',
-            'options' => [
-                'label' => 'Assign Persistent Identifier', // @translate
-                'info' => 'Mint & assign PID from chosen service.', // @translate
-            ],
-        ]);
+if ($this->setting('pid_assign_all')) {
+    $form->add([
+                'name' => 'o:pid[o:id]',
+                'type' => 'checkbox',
+                'options' => [
+                    'label' => 'Assign Persistent Identifier', // @translate
+                    'info' => 'Mint & assign PID from chosen service.', // @translate
+                ],
+                'attributes' => [
+		            'value' => true,
+	            ],
+            ]);
+} else {
+    $form->add([
+                'name' => 'o:pid[o:id]',
+                'type' => 'checkbox',
+                'options' => [
+                    'label' => 'Assign Persistent Identifier', // @translate
+                    'info' => 'Mint & assign PID from chosen service.', // @translate
+                ],
+            ]);
+};
 $pid = $form->get('o:pid[o:id]');
 if (isset($resource)) {
     if ($resourceTemplate = $resource->resourceTemplate()) {

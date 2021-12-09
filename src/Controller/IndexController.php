@@ -36,8 +36,8 @@ class IndexController extends AbstractActionController
         $view = new ViewModel;
         $form = $this->getForm(ConfigForm::class);
         $form->setData([
-            'assign_all' => $this->settings->get('assign_all'),
-            'assign_existing' => $this->settings->get('assign_existing'),
+            'pid_assign_all' => $this->settings->get('pid_assign_all'),
+            'pid_assign_existing' => $this->settings->get('pid_assign_existing'),
             'pid_service' => $this->settings->get('pid_service'),
         ]);
         $view->setVariable('form', $form);
@@ -46,8 +46,8 @@ class IndexController extends AbstractActionController
             $form->setData($this->params()->fromPost());
             if ($form->isValid()) {
                 $formData = $form->getData();
-                $this->settings->set('assign_all', $formData['assign_all']);
-                $this->settings->set('assign_existing', $formData['assign_existing']);
+                $this->settings->set('pid_assign_all', $formData['pid_assign_all']);
+                $this->settings->set('pid_assign_existing', $formData['pid_assign_existing']);
                 $this->settings->set('pid_service', $formData['pid_service']);
             }
         }
