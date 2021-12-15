@@ -104,13 +104,8 @@ class IndexController extends AbstractActionController
     // Mint (create) PID via PID Service API and store in DB
     public function mintPID($pidService, $pidTarget, $itemID)
     {
-        // TODO: End session after item save
-        $sessionCookie = $pidService->connect($this->pidUsername, $this->pidPassword);
-        if (!$sessionCookie) {
-            return null;
-        }
 
-        $newPID = $pidService->mint($sessionCookie, $this->pidShoulder, $pidTarget);
+        $newPID = $pidService->mint($this->pidUsername, $this->pidPassword, $this->pidShoulder, $pidTarget);
 
         if (!$newPID) {
             return null;
@@ -125,13 +120,7 @@ class IndexController extends AbstractActionController
     // Remove PID via PID Service API and delete from DB
     public function removePID($pidService, $toRemovePID, $itemID)
     {
-        // TODO: End session after item save
-        $sessionCookie = $pidService->connect($this->pidUsername, $this->pidPassword);
-        if (!$sessionCookie) {
-            return null;
-        }
-
-        $deletedPID = $pidService->delete($sessionCookie, $toRemovePID);
+        $deletedPID = $pidService->delete($this->pidUsername, $this->pidPassword, $toRemovePID);
 
         if (!$deletedPID) {
             return null;
