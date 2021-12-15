@@ -51,9 +51,9 @@ class Module extends AbstractModule
         $sharedEventManager->attach(
             '*',
             'api.create.post',
-            [$this, 'handleAddFormAfter']
+            [$this, 'mintPIDNewResource']
         );
-        
+
         $sharedEventManager->attach(
             'Omeka\Controller\Admin\Item',
             'view.show.sidebar',
@@ -73,19 +73,18 @@ class Module extends AbstractModule
         echo $view->partial('persistent-identifiers/common/resource-fields-add');
     }
 
-    public function handleAddFormAfter(Event $event)
+    public function mintPIDNewResource(Event $event)
     {
         $services = $this->getServiceLocator();
         $settings = $services->get('Omeka\Settings');
         $api = $services->get('Omeka\ApiManager');
 
-        $requestContent = $event->getParam('request')->getContent();
         $addObject = $event->getParam('response')->getContent();
         $adapter = $event->getTarget();
         $addObjectRepresentation = $adapter->getRepresentation($addObject);
 
-        // If PID element checked, mint and store new PID
-        if (!empty($requestContent['o:pid']['o:id'])) {
+        // If PID element checked and resource is item, mint and store new PID
+        if (!empty($settings->get('pid_assign_all')) && $adapter->getResourceName() == 'items') {
             // Set selected PID service
             $pidSelector = $services->get('PersistentIdentifiers\PIDSelectorManager');
             $pidSelectedService = $settings->get('pid_service');
@@ -97,14 +96,8 @@ class Module extends AbstractModule
             $pidTarget = $addObjectRepresentation->apiUrl();
             $itemID = $addObjectRepresentation->id();
 
-            // TODO: End session after item save
-            $sessionCookie = $pidService->connect($pidUsername, $pidPassword);
-            if (!$sessionCookie) {
-                return;
-            }
-
             // Mint and store new PID
-            $newPID = $pidService->mint($sessionCookie, $pidShoulder, $pidTarget);
+            $newPID = $pidService->mint($pidUsername, $pidPassword, $pidShoulder, $pidTarget);
 
             if (!$newPID) {
                 return;
@@ -119,7 +112,7 @@ class Module extends AbstractModule
             }
         }
     }
-    
+
     public function handleShowItemSidebar(Event $event)
     {
         $view = $event->getTarget();
