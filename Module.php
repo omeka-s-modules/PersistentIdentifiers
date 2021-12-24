@@ -105,12 +105,14 @@ class Module extends AbstractModule
     {
         $settings = $this->getServiceLocator()->get('Omeka\Settings');
 
+        $requestContent = $event->getParam('request')->getContent();
         $addObject = $event->getParam('response')->getContent();
         $adapter = $event->getTarget();
         $itemRepresentation = $adapter->getRepresentation($addObject);
 
         // If PID element checked and resource is item, mint and store new PID
-        if (!empty($settings->get('pid_assign_all')) && $adapter->getResourceName() == 'items') {
+        if (!empty($requestContent['o:pid']['o:id']) || !empty($settings->get('pid_assign_all')) 
+            && $adapter->getResourceName() == 'items') {
             $this->mintPID($itemRepresentation);
         }
     }
