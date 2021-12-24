@@ -2,6 +2,7 @@
 namespace PersistentIdentifiers;
 
 use Omeka\Module\AbstractModule;
+use Omeka\Entity\Item;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\View\Renderer\PhpRenderer;
 use Laminas\Mvc\Controller\AbstractController;
@@ -59,60 +60,62 @@ class Module extends AbstractModule
             'view.show.sidebar',
             [$this, 'handleShowItemSidebar']
         );
+
+        $sharedEventManager->attach(
+            'Omeka\Form\ResourceBatchUpdateForm',
+            'form.add_elements',
+            [$this, 'handleBatchUpdateForm']
+        );
+
+        $sharedEventManager->attach(
+            'Omeka\Form\ResourceBatchUpdateForm',
+            'form.add_input_filters',
+            [$this, 'filterBatchUpdateForm']
+        );
+
+        $sharedEventManager->attach(
+            'Omeka\Api\Adapter\ItemAdapter',
+            'api.preprocess_batch_update',
+            [$this, 'authorizePIDBatchUpdate']
+        );
+        
+        $sharedEventManager->attach(
+            'Omeka\Api\Adapter\ItemAdapter',
+            'api.hydrate.post',
+            [$this, 'batchUpdatePIDEdit']
+        );
     }
-    
+
+    // Add PID element to item edit form
     public function handleEditFormBefore(Event $event)
     {
         $view = $event->getTarget();
         echo $view->partial('persistent-identifiers/common/resource-fields-edit');
     }
-    
+
+    // Add PID checkbox to new item form
     public function handleAddFormBefore(Event $event)
     {
         $view = $event->getTarget();
         echo $view->partial('persistent-identifiers/common/resource-fields-add');
     }
 
+    // Mint PID for newly created item
     public function mintPIDNewResource(Event $event)
     {
-        $services = $this->getServiceLocator();
-        $settings = $services->get('Omeka\Settings');
-        $api = $services->get('Omeka\ApiManager');
+        $settings = $this->getServiceLocator()->get('Omeka\Settings');
 
         $addObject = $event->getParam('response')->getContent();
         $adapter = $event->getTarget();
-        $addObjectRepresentation = $adapter->getRepresentation($addObject);
+        $itemRepresentation = $adapter->getRepresentation($addObject);
 
         // If PID element checked and resource is item, mint and store new PID
         if (!empty($settings->get('pid_assign_all')) && $adapter->getResourceName() == 'items') {
-            // Set selected PID service
-            $pidSelector = $services->get('PersistentIdentifiers\PIDSelectorManager');
-            $pidSelectedService = $settings->get('pid_service');
-            $pidService = $pidSelector->get($pidSelectedService);
-
-            $pidUsername = $settings->get('pid_username');
-            $pidPassword = $settings->get('pid_password');
-            $pidShoulder = $settings->get('pid_shoulder');
-            $pidTarget = $addObjectRepresentation->apiUrl();
-            $itemID = $addObjectRepresentation->id();
-
-            // Mint and store new PID
-            $newPID = $pidService->mint($pidUsername, $pidPassword, $pidShoulder, $pidTarget);
-
-            if (!$newPID) {
-                return;
-            } else {
-                // Save to DB
-                $json = [
-                    'o:item' => ['o:id' => $itemID],
-                    'pid' => $newPID,
-                ];
-
-                $response = $api->create('pid_items', $json);
-            }
+            $this->mintPID($itemRepresentation);
         }
     }
 
+    // Add PID to item display sidebar
     public function handleShowItemSidebar(Event $event)
     {
         $view = $event->getTarget();
@@ -125,6 +128,151 @@ class Module extends AbstractModule
             echo '<h4>' . $view->translate('Persistent Identifier') . '</h4>';
             echo '<div class="value">' . $PIDrecord->getPID() . '</div>';
             echo '</div>';
+        }
+    }
+
+    // Add PID action radio buttons to the resource batch update form.
+    public function handleBatchUpdateForm(Event $event)
+    {
+        $form = $event->getTarget();
+        $resourceType = $form->getOption('resource_type');
+        if ('item' !== $resourceType) {
+            // This is not an item batch update form.
+            return;
+        }
+        $form->add([
+                    'name' => 'batch_pid_action',
+                    'type' => 'radio',
+                    'options' => [
+                        'label' => 'Persistent Identifiers', // @translate
+                        'info' => 'Mint & assign PID to any item that does not already have one, or remove any existing PIDs.', // @translate
+                        'value_options' => [
+                            'mint' => 'Mint PIDs', // @translate
+                            'remove' => 'Remove PIDs', // @translate
+                            '' => '[No action]', // @translate
+                        ],
+                    ],
+                    'attributes' => [
+                        'value' => '',
+                    ],
+                ]);
+    }
+
+    // Don't require PID action value to the resource batch update form.
+    public function filterBatchUpdateForm(Event $event)
+    {
+        $inputFilter = $event->getParam('inputFilter');
+        $inputFilter->add([
+            'name' => 'batch_pid_action',
+            'required' => false,
+        ]);
+    }
+
+    // Authorize 'batch_pid_action' when preprocessing batch update data.
+    // This signals to mint or delete PID while updating each item.
+    public function authorizePIDBatchUpdate(Event $event)
+    {
+        $adapter = $event->getTarget();
+        $data = $event->getParam('data');
+        $rawData = $event->getParam('request')->getContent();
+        if (isset($rawData['batch_pid_action'])
+            && in_array($rawData['batch_pid_action'], ['mint', 'remove'])
+        ) {
+            $data['batch_pid_action'] = $rawData['batch_pid_action'];
+        }
+        $event->setParam('data', $data);
+    }
+
+    // After hydrating, mint or delete PID for item according to 'batch_pid_action'.
+    // When minting, skip items with existing PID. When deleting, skip items with no PID.
+    public function batchUpdatePIDEdit(Event $event)
+    {
+        $item = $event->getParam('entity');
+        $data = $event->getParam('request')->getContent();
+        $action = isset($data['batch_pid_action']) ? $data['batch_pid_action'] : '';
+        $adapter = $event->getTarget();
+        $itemRepresentation = $adapter->getRepresentation($item);
+
+        $api = $this->getServiceLocator()->get('Omeka\ApiManager');
+        $response = $api->search('pid_items', ['item_id' => $item->getId()]) ?: '';
+        $PIDcontent = $response->getContent();
+
+        // If mint action selected and no PID exists, mint and store PID
+        if (('mint' === $action) && empty($PIDcontent)) {
+            $this->mintPID($itemRepresentation);
+        }
+
+        // If remove action selected and PID exists, remove and delete
+        if (('remove' === $action) && !empty($PIDcontent)) {
+            $itemPID = $PIDcontent[0]->getPID();
+            $this->removePID($itemRepresentation, $itemPID);
+        }
+    }
+
+    public function mintPID($itemRepresentation)
+    {
+        $services = $this->getServiceLocator();
+        $settings = $services->get('Omeka\Settings');
+        $api = $services->get('Omeka\ApiManager');
+
+        // Set selected PID service
+        $pidSelector = $services->get('PersistentIdentifiers\PIDSelectorManager');
+        $pidSelectedService = $settings->get('pid_service');
+        $pidService = $pidSelector->get($pidSelectedService);
+
+        $pidUsername = $settings->get('pid_username');
+        $pidPassword = $settings->get('pid_password');
+        $pidShoulder = $settings->get('pid_shoulder');
+        $pidTarget = $itemRepresentation->apiUrl();
+        $itemID = $itemRepresentation->id();
+
+        // Mint and store new PID
+        $newPID = $pidService->mint($pidUsername, $pidPassword, $pidShoulder, $pidTarget);
+
+        if (!$newPID) {
+            return;
+        } else {
+            // Save to DB
+            $json = [
+                'o:item' => ['o:id' => $itemID],
+                'pid' => $newPID,
+            ];
+
+            $api->create('pid_items', $json);
+        }
+    }
+
+    public function removePID($itemRepresentation, $itemPID)
+    {
+        $services = $this->getServiceLocator();
+        $settings = $services->get('Omeka\Settings');
+        $api = $services->get('Omeka\ApiManager');
+
+        // Set selected PID service
+        $pidSelector = $services->get('PersistentIdentifiers\PIDSelectorManager');
+        $pidSelectedService = $settings->get('pid_service');
+        $pidService = $pidSelector->get($pidSelectedService);
+
+        $pidUsername = $settings->get('pid_username');
+        $pidPassword = $settings->get('pid_password');
+        $itemID = $itemRepresentation->id();
+
+        // Mint and store new PID
+        $deletedPID = $pidService->delete($pidUsername, $pidPassword, $itemPID);
+
+        if (!$deletedPID) {
+            return;
+        } else {
+            // Ensure PID record exists
+            $response = $api->search('pid_items', ['item_id' => $itemID]);
+            $content = $response->getContent();
+            if (empty($content)) {
+                return;
+            } else {
+                // Delete PID record in DB
+                $PIDrecord = $content[0];
+                $api->delete('pid_items', $PIDrecord->id());
+            }
         }
     }
 }
