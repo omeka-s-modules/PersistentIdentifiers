@@ -131,7 +131,7 @@ class EZID implements PIDSelectorInterface
         // EZIDs cannot be deleted, only metadata (i.e. target) can be removed
         $request = $this->client
             ->setUri($shoulder)
-            ->setMethod('PUT')
+            ->setMethod('POST')
             ->setAuth($username, $password)
             ->setRawBody($target);
         $request->getRequest()->getHeaders()->addHeaderLine('Content-type: text/plain');
