@@ -37,7 +37,7 @@ class IndexController extends AbstractActionController
         $form = $this->getForm(ConfigForm::class);
         $form->setData([
             'pid_assign_all' => $this->settings->get('pid_assign_all'),
-            'pid_assign_existing' => $this->settings->get('pid_assign_existing'),
+            'existing_pid_fields' => $this->settings->get('existing_pid_fields'),
             'pid_service' => $this->settings->get('pid_service'),
         ]);
         $view->setVariable('form', $form);
@@ -47,7 +47,7 @@ class IndexController extends AbstractActionController
             if ($form->isValid()) {
                 $formData = $form->getData();
                 $this->settings->set('pid_assign_all', $formData['pid_assign_all']);
-                $this->settings->set('pid_assign_existing', $formData['pid_assign_existing']);
+                $this->settings->set('existing_pid_fields', $formData['existing_pid_fields']);
                 $this->settings->set('pid_service', $formData['pid_service']);
             }
         }
@@ -104,16 +104,31 @@ class IndexController extends AbstractActionController
     // Mint (create) PID via PID Service API and store in DB
     public function mintPID($pidService, $pidTarget, $itemID)
     {
+        // If PIDs in existing fields, attempt to extract
+        if ($this->settings->get('existing_pid_fields')) {
+            $existingFields = $this->settings->get('existing_pid_fields');
+            $response = $this->api()->read('items', $itemID);
+            $itemRepresentation = $response->getContent();
+            $existingPID = $pidService->extract($this->pidShoulder, $existingFields, $itemRepresentation);
+            if ($existingPID) {
+                // Attempt to update PID service with Omeka resource URI
+                $addPID = $pidService->update($this->pidUsername, $this->pidPassword, $existingPID, $pidTarget);
+            } else if (empty($extractOnly)) {
+                // If no existing PID found and PID element checked, mint new PID
+                $addPID = $pidService->mint($this->pidUsername, $this->pidPassword, $this->pidShoulder, $pidTarget);
+            }
+        } else {
+            // Mint new PID
+            $addPID = $pidService->mint($this->pidUsername, $this->pidPassword, $this->pidShoulder, $pidTarget);
+        }
 
-        $newPID = $pidService->mint($this->pidUsername, $this->pidPassword, $this->pidShoulder, $pidTarget);
-
-        if (!$newPID) {
+        if (!$addPID) {
             return null;
         } else {
             // Save to DB
-            $this->storePID($newPID, $itemID);
+            $this->storePID($addPID, $itemID);
 
-            return $newPID;
+            return $addPID;
         }
     }
 

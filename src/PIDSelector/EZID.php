@@ -71,6 +71,33 @@ class EZID implements PIDSelectorInterface
         }
     }
 
+    public function update($username, $password, $existingPID, $targetURI)
+    {
+        // Build organization-specific update URL
+        $shoulder = 'https://ezid.cdlib.org/id/' . $existingPID;
+        // append EZID required prefix to pid target
+        $target = '_target: ' . $targetURI;
+
+        // Update target via PID API
+        // If PID not found, new PID will be created
+        $request = $this->client
+            ->setUri($shoulder)
+            ->setMethod('PUT')
+            ->setAuth($username, $password)
+            ->setRawBody($target);
+        $request->getRequest()->getHeaders()->addHeaderLine('Content-type: text/plain');
+        $request->getRequest()->setQuery(new Parameters(['update_if_exists' => 'yes']));
+        $response = $request->send();
+        // Clear parameters for batch minting/editing
+        $request->resetParameters();
+        if (!$response->isSuccess()) {
+            return;
+        } else {
+            $updatedPID = str_replace('success: ', '', $response->getBody());
+            return $updatedPID;
+        }
+    }
+
     public function batchMint($sessionCookie, $pidShoulder, $targetURI)
     {
         // Build organization-specific mint URL
@@ -101,13 +128,13 @@ class EZID implements PIDSelectorInterface
         $target = '_target:';
         
         // Remove target via PID API
+        // EZIDs cannot be deleted, only metadata (i.e. target) can be removed
         $request = $this->client
             ->setUri($shoulder)
             ->setMethod('PUT')
             ->setAuth($username, $password)
             ->setRawBody($target);
         $request->getRequest()->getHeaders()->addHeaderLine('Content-type: text/plain');
-        $request->getRequest()->setQuery(new Parameters(['update_if_exists' => 'yes']));
         $response = $request->send();
         if (!$response->isSuccess()) {
             return;
@@ -138,5 +165,24 @@ class EZID implements PIDSelectorInterface
             $deletedPID = str_replace('success: ', '', $response->getBody());
             return $deletedPID;
         }
+    }
+
+    public function extract($pidShoulder, $existingFields, $itemRepresentation)
+    {
+        foreach (explode(',', $existingFields) as $field) {
+            $field = trim($field);
+            // Match input PID fields to existing resource metadata fields
+            if (array_key_exists($field, $itemRepresentation->values())) {
+                $values = $itemRepresentation->value($field, ['all' => true]);
+                foreach ($values as $value) {
+                    // Find PID values by checking for institution's EZID shoulder within value
+                    // Return first match
+                    if (strpos($value, $pidShoulder) !== false) {
+                        return $value;
+                    }
+                }
+            }
+        }
+        return;
     }
 }

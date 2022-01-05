@@ -37,7 +37,7 @@ class ConfigForm extends Form
         ]);
 
         $this->add([
-            'name' => 'pid_assign_existing',
+            'name' => 'existing_pid_fields',
             'type' => 'text',
             'options' => [
                 'label' => 'Fields with existing PIDs', // @translate

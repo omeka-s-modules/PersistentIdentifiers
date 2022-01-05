@@ -1,6 +1,8 @@
 <?php
 namespace PersistentIdentifiers\PIDSelector;
 
+use Omeka\Api\Representation\ItemRepresentation;
+
 /**
  * Interface for different PID Services.
  */
@@ -34,17 +36,28 @@ interface PIDSelectorInterface
      *
      * @param string $username
      * @param string $password
-     * @param string $pidShoulder     
+     * @param string $pidShoulder
      * @param string $targetURI
      * @return string
      */
     public function mint($username, $password, $pidShoulder, $targetURI);
     
     /**
+     * Process a single PID update request.
+     *
+     * @param string $username
+     * @param string $password
+     * @param string $existingPID
+     * @param string $targetURI
+     * @return string
+     */
+    public function update($username, $password, $existingPID, $targetURI);
+
+    /**
      * Process a batch PID mint (create) request.
      *
      * @param string $sessionCookie
-     * @param string $pidShoulder     
+     * @param string $pidShoulder
      * @param string $targetURI
      * @return string
      */
@@ -53,7 +66,8 @@ interface PIDSelectorInterface
     /**
      * Process a single PID delete request.
      *
-     * @param string $sessionCookie
+     * @param string $username
+     * @param string $password
      * @param string $pidToDelete
      * @return string
      */
@@ -62,10 +76,20 @@ interface PIDSelectorInterface
     /**
      * Process a batch PID delete request.
      *
-     * @param string $username
-     * @param string $password
+     * @param string $sessionCookie
      * @param string $pidToDelete
      * @return string
      */
     public function batchDelete($sessionCookie, $pidToDelete);
+
+    /**
+     * Extract PID value from designated metadata field(s)
+     * and test for validity.
+     *
+     * @param string $pidShoulder
+     * @param array $existingFields
+     * @param ItemRepresentation $itemRepresentation
+     * @return string
+     */
+    public function extract($pidShoulder, $existingFields, $itemRepresentation);
 }

@@ -69,10 +69,15 @@ class Module extends AbstractModule
                 $adapter = $event->getTarget();
                 $itemRepresentation = $adapter->getRepresentation($addObject);
 
-                // If PID element checked and resource is item, mint and store new PID
-                if (!empty($requestContent['o:pid']['o:id']) || !empty($settings->get('pid_assign_all')) 
+                // If PID element and pid_assign_all unchecked, only attempt extraction (no new minting)
+                $extractOnly = (empty($requestContent['o:pid']['o:id']) && empty($settings->get('pid_assign_all'))) ? true : false;
+
+                // If PID element or pid_assign_all checked,
+                // mint/update and store PID
+                if ((!empty($requestContent['o:pid']['o:id'])
+                    || !empty($settings->get('pid_assign_all')))
                     && $adapter->getResourceName() == 'items') {
-                    $this->mintPID($itemRepresentation);
+                        $this->mintPID($itemRepresentation, $extractOnly);
                 }
             }
         );
@@ -187,8 +192,9 @@ class Module extends AbstractModule
         );
     }
 
-    public function mintPID($itemRepresentation)
+    public function mintPID($itemRepresentation, $extractOnly = false)
     {
+
         $services = $this->getServiceLocator();
         $settings = $services->get('Omeka\Settings');
         $api = $services->get('Omeka\ApiManager');
@@ -204,16 +210,29 @@ class Module extends AbstractModule
         $pidTarget = $itemRepresentation->apiUrl();
         $itemID = $itemRepresentation->id();
 
-        // Mint and store new PID
-        $newPID = $pidService->mint($pidUsername, $pidPassword, $pidShoulder, $pidTarget);
+        // If PIDs in existing fields, attempt to extract
+        if ($settings->get('existing_pid_fields')) {
+            $existingFields = $settings->get('existing_pid_fields');
+            $existingPID = $pidService->extract($pidShoulder, $existingFields, $itemRepresentation);
+            if ($existingPID) {
+                // Attempt to update PID service with Omeka resource URI
+                $addPID = $pidService->update($pidUsername, $pidPassword, $existingPID, $pidTarget);
+            } else if (empty($extractOnly)) {
+                // If no existing PID found and PID element checked, mint new PID
+                $addPID = $pidService->mint($pidUsername, $pidPassword, $pidShoulder, $pidTarget);
+            }
+        } else {
+            // Mint new PID
+            $addPID = $pidService->mint($pidUsername, $pidPassword, $pidShoulder, $pidTarget);
+        }
 
-        if (!$newPID) {
+        if (!$addPID) {
             return;
         } else {
             // Save to DB
             $json = [
                 'o:item' => ['o:id' => $itemID],
-                'pid' => $newPID,
+                'pid' => $addPID,
             ];
 
             $api->create('pid_items', $json);
