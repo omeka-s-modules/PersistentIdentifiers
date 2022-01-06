@@ -14,22 +14,6 @@ interface PIDSelectorInterface
      * @return string
      */
     public function getLabel();
-
-    /**
-     * Does the PID service allow for session cookies/single login?
-     *
-     * @return bool
-     */
-    public function isSessionable();
-
-    /**
-     * Connect to PID service API and return access token
-     *
-     * @param string $username
-     * @param string $password
-     * @return string
-     */
-    public function connect($username, $password);
     
     /**
      * Process a single PID mint (create) request.
@@ -54,16 +38,6 @@ interface PIDSelectorInterface
     public function update($username, $password, $existingPID, $targetURI);
 
     /**
-     * Process a batch PID mint (create) request.
-     *
-     * @param string $sessionCookie
-     * @param string $pidShoulder
-     * @param string $targetURI
-     * @return string
-     */
-    public function batchMint($sessionCookie, $pidShoulder, $targetURI);
-
-    /**
      * Process a single PID delete request.
      *
      * @param string $username
@@ -72,15 +46,6 @@ interface PIDSelectorInterface
      * @return string
      */
     public function delete($username, $password, $pidToDelete);
-
-    /**
-     * Process a batch PID delete request.
-     *
-     * @param string $sessionCookie
-     * @param string $pidToDelete
-     * @return string
-     */
-    public function batchDelete($sessionCookie, $pidToDelete);
 
     /**
      * Extract PID value from designated metadata field(s)
