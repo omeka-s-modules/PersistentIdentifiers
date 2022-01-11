@@ -1,0 +1,63 @@
+<?php
+$translate = $this->plugin('translate');
+$escape = $this->plugin('escapeHtml');
+$this->htmlElement('body')->appendAttribute('class', 'item resource show');
+$itemMedia = $item->media();
+
+$filterLocale = false;
+$lang = $this->lang();
+?>
+
+<?php echo $this->pageTitle($item->displayTitle(null, ($filterLocale ? $lang : null)), 2); ?>
+<h3><?php echo $translate('Item'); ?></h3>
+<?php $this->trigger('view.show.before'); ?>
+<?php if ($itemMedia): ?>
+    <div class="media-embeds">
+    <?php foreach ($itemMedia as $media):
+        echo $media->render();
+    endforeach;
+    ?>
+    </div>
+<?php endif; ?>
+<?php echo $item->displayValues(); ?>
+<div class="property">
+    <?php $itemSets = $item->itemSets(); ?>
+    <?php if (count($itemSets) > 0): ?>
+    <h4><?php echo $translate('Item sets'); ?></h4>
+    <?php foreach ($itemSets as $itemSet): ?>
+    <div class="value"><a href="<?php echo $escape($itemSet->url()); ?>"><?php echo $itemSet->displayTitle(null, ($filterLocale ? $lang : null)); ?></a></div>
+    <?php endforeach; ?>
+    <?php endif; ?>
+</div>
+<?php if ($itemMedia): ?>
+<h3><?php echo $translate('Media'); ?></h3>
+<div class="media-list">
+    <?php foreach ($itemMedia as $media): ?>
+        <?php echo $media->linkPretty(); ?>
+    <?php endforeach; ?>
+</div>
+<?php endif; ?>
+<?php if ($item->sites()): ?>
+<h3><?php echo $translate('Sites'); ?></h3>
+<div class="pid-site-list">
+    <?php foreach ($item->sites() as $site): ?>
+        <div class="site">
+            <?php echo $this->hyperlink($site->title(), $site->siteUrl(), ['class' => 'site-link']); ?>
+        </div>
+    <?php endforeach; ?>
+</div>
+<?php endif; ?>
+
+<?php
+$page = $this->params()->fromQuery('page', 1);
+$property = $this->params()->fromQuery('property');
+$subjectValues = $item->displaySubjectValues($page, 25, $property);
+?>
+<?php if ($subjectValues): ?>
+<div id="item-linked">
+    <h3><?php echo $translate('Linked resources'); ?></h3>
+    <?php echo $subjectValues; ?>
+</div>
+<?php endif; ?>
+
+<?php $this->trigger('view.show.after'); ?>

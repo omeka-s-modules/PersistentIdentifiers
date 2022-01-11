@@ -99,6 +99,17 @@ return [
                     ],
                 ],
             ],
+            'PIDitem' => [
+                'type' => \Laminas\Router\Http\Segment::class,
+                'options' => [
+                    'route' => '/item/:id',
+                    'defaults' => [
+                        '__NAMESPACE__' => 'PersistentIdentifiers\Controller',
+                        'controller' => 'Index',
+                        'action' => 'item-landing-page',
+                    ],
+                ],
+            ],
         ],
     ],
     'navigation' => [

@@ -101,6 +101,17 @@ class IndexController extends AbstractActionController
         }
     }
 
+    public function itemLandingPageAction()
+    {
+        $response = $this->api()->read('items', $this->params('id'));
+        $item = $response->getContent();
+
+        $view = new ViewModel;
+        $view->setVariable('item', $item);
+        $view->setVariable('resource', $item);
+        return $view;
+    }
+
     // Mint (create) PID via PID Service API and store in DB
     public function mintPID($pidService, $pidTarget, $itemID)
     {
