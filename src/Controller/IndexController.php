@@ -143,19 +143,15 @@ class IndexController extends AbstractActionController
         }
     }
 
-    // Remove PID via PID Service API and delete from DB
+    // Attempt to remove PID/target URI from PID Service and delete from DB
     public function removePID($pidService, $toRemovePID, $itemID)
     {
         $deletedPID = $pidService->delete($this->pidUsername, $this->pidPassword, $toRemovePID);
 
-        if (!$deletedPID) {
-            return null;
-        } else {
-            // Delete from DB
-            $this->deletePID($itemID);
-            $this->messenger()->addSuccess('PID removed');
-            return 'success';
-        }
+        // Delete from DB
+        $this->deletePID($itemID);
+        $this->messenger()->addSuccess('PID removed');
+        return 'success';
     }
 
     // Add PID to Omeka database
@@ -192,13 +188,5 @@ class IndexController extends AbstractActionController
             $PIDrecord = $content[0];
             $this->api->delete('pid_items', $PIDrecord->id());
         }
-    }
-
-    public function extractPID($item)
-    {
-        // TODO: Look for PID values in designated metadata fields
-        // store & update target via PID API if found
-        // RegEx to look for specific syntax, or just take everything
-        // and reject if HTTP error?
     }
 }

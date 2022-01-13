@@ -25,7 +25,7 @@ class Module extends AbstractModule
         parent::onBootstrap($event);
 
         $acl = $this->getServiceLocator()->get('Omeka\Acl');
-        // Allow all users to view PID generic item landing page.
+        // Allow visitors to view PID generic item landing page.
         $acl->allow(null, 'PersistentIdentifiers\Controller\Index');
     }
 
@@ -263,22 +263,18 @@ class Module extends AbstractModule
         $pidPassword = $settings->get('pid_password');
         $itemID = $itemRepresentation->id();
 
-        // Mint and store new PID
+        // Attempt to remove PID/target URI from PID Service
         $deletedPID = $pidService->delete($pidUsername, $pidPassword, $itemPID);
 
-        if (!$deletedPID) {
+        // Ensure PID record exists
+        $response = $api->search('pid_items', ['item_id' => $itemID]);
+        $content = $response->getContent();
+        if (empty($content)) {
             return;
         } else {
-            // Ensure PID record exists
-            $response = $api->search('pid_items', ['item_id' => $itemID]);
-            $content = $response->getContent();
-            if (empty($content)) {
-                return;
-            } else {
-                // Delete PID record in DB
-                $PIDrecord = $content[0];
-                $api->delete('pid_items', $PIDrecord->id());
-            }
+            // Delete PID record in DB
+            $PIDrecord = $content[0];
+            $api->delete('pid_items', $PIDrecord->id());
         }
     }
 }
