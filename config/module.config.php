@@ -10,7 +10,13 @@ return [
             ],
         ],
     ],
+    'listeners' => [
+        'PersistentIdentifiers\PIDListener',
+    ],
     'service_manager' => [
+        'invokables' => [
+            'PersistentIdentifiers\PIDListener' => PersistentIdentifiers\Mvc\PIDListener::class,
+        ],
         'factories' => [
             'PersistentIdentifiers\PIDSelectorManager' => PersistentIdentifiers\Service\PIDSelector\ManagerFactory::class,
         ],
