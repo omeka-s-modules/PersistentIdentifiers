@@ -20,6 +20,15 @@ class Module extends AbstractModule
         return include __DIR__ . '/config/module.config.php';
     }
 
+    public function onBootstrap(MvcEvent $event)
+    {
+        parent::onBootstrap($event);
+
+        $acl = $this->getServiceLocator()->get('Omeka\Acl');
+        // Allow all users to view PID generic item landing page.
+        $acl->allow(null, 'PersistentIdentifiers\Controller\Index');
+    }
+
     public function install(ServiceLocatorInterface $serviceLocator)
     {
         $connection = $serviceLocator->get('Omeka\Connection');
