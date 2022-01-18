@@ -11,39 +11,33 @@ $lang = $this->lang();
 <?php echo $this->pageTitle($item->displayTitle(null, ($filterLocale ? $lang : null)), 2); ?>
 <h3><?php echo $translate('Item'); ?></h3>
 <?php $this->trigger('view.show.before'); ?>
-<?php if ($itemMedia): ?>
-    <div class="media-embeds">
-    <?php foreach ($itemMedia as $media):
-        echo $media->render();
-    endforeach;
-    ?>
-    </div>
-<?php endif; ?>
-<?php echo $item->displayValues(); ?>
-<div class="property">
-    <?php $itemSets = $item->itemSets(); ?>
-    <?php if (count($itemSets) > 0): ?>
-    <h4><?php echo $translate('Item sets'); ?></h4>
-    <?php foreach ($itemSets as $itemSet): ?>
-    <div class="value"><a href="<?php echo $escape($itemSet->url()); ?>"><?php echo $itemSet->displayTitle(null, ($filterLocale ? $lang : null)); ?></a></div>
-    <?php endforeach; ?>
-    <?php endif; ?>
-</div>
-<?php if ($itemMedia): ?>
-<h3><?php echo $translate('Media'); ?></h3>
-<div class="media-list">
-    <?php foreach ($itemMedia as $media): ?>
-        <?php echo $media->linkPretty(); ?>
-    <?php endforeach; ?>
-</div>
-<?php endif; ?>
 <?php if ($item->sites()): ?>
 <h3><?php echo $translate('Sites'); ?></h3>
 <div class="pid-site-list">
     <?php foreach ($item->sites() as $site): ?>
         <div class="site">
-            <?php echo $this->hyperlink($site->title(), $site->siteUrl(), ['class' => 'site-link']); ?>
+            <?php echo $this->hyperlink($site->title(), $item->siteUrl($site->slug()), ['class' => 'site-link']); ?>
         </div>
+    <?php endforeach; ?>
+</div>
+<?php endif; ?>
+<?php 
+echo $item->displayValues();
+$itemSets = $item->itemSets();
+?>
+<?php if (count($itemSets) > 0): ?>
+<div class="item-sets">
+    <h3><?php echo $translate('Item sets'); ?></h3>
+    <?php foreach ($itemSets as $itemSet): ?>
+    <div class="value"><a href="<?php echo $escape($itemSet->url()); ?>"><?php echo $itemSet->displayTitle(null, ($filterLocale ? $lang : null)); ?></a></div>
+    <?php endforeach; ?>
+</div>
+<?php endif; ?>
+<?php if ($itemMedia): ?>
+<h3><?php echo $translate('Media'); ?></h3>
+<div class="media-list">
+    <?php foreach ($itemMedia as $media): ?>
+        <?php echo $media->linkPretty(); ?>
     <?php endforeach; ?>
 </div>
 <?php endif; ?>
