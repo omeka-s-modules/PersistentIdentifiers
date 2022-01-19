@@ -17,6 +17,9 @@ class PIDListener extends AbstractListenerAggregate
         if (!$this->isValidRoute($event)) {
             return;
         }
+        if (!$this->isValidRequest($event)) {
+            return;
+        }
 
         // Set route to generic PID item landing page
         $url = $event->getRouter()->assemble(
@@ -46,6 +49,17 @@ class PIDListener extends AbstractListenerAggregate
         }
         $id = $routeMatch->getParam('id');
         if (null === $id) {
+            return false;
+        }
+        return true;
+    }
+
+    // Ensure request headers accept text/html (i.e. request is from browser).
+    protected function isValidRequest(MvcEvent $event)
+    {
+        $request = $event->getRequest();
+        $acceptHeader = $request->getHeaders()->get('Accept')->getFieldValue();
+        if (strpos($acceptHeader, 'text/html') === false) {
             return false;
         }
         return true;
