@@ -3,6 +3,7 @@ namespace PersistentIdentifiers\Controller;
 
 use PersistentIdentifiers\Form\ConfigForm;
 use PersistentIdentifiers\Form\EZIDForm;
+use PersistentIdentifiers\Form\DataCiteForm;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\View\Model\ViewModel;
@@ -80,6 +81,31 @@ class IndexController extends AbstractActionController
         return $view;
     }
     
+    public function DataciteConfigurationAction()
+    {
+        $view = new ViewModel;
+        $form = $this->getForm(DataCiteForm::class);
+        $form->setData([
+            'datacite_shoulder' => $this->settings->get('pid_shoulder'),
+            'datacite_username' => $this->settings->get('pid_username'),
+            'datacite_password' => $this->settings->get('pid_password'),
+        ]);
+        $view->setVariable('form', $form);
+
+        if ($this->getRequest()->isPost()) {
+            $form->setData($this->params()->fromPost());
+            if ($form->isValid()) {
+                $formData = $form->getData();
+
+                $this->settings->set('pid_shoulder', $formData['pid_shoulder']);
+                $this->settings->set('pid_username', $formData['datacite_username']);
+                $this->settings->set('pid_password', $formData['datacite_password']);
+            }
+        }
+
+        return $view;
+    }
+
     // Mint and/or remove PID (called via Ajax from pid-form)
     public function pidEditAction()
     {        
