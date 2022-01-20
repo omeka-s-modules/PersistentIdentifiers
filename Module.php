@@ -213,26 +213,23 @@ class Module extends AbstractModule
         $pidSelectedService = $settings->get('pid_service');
         $pidService = $pidSelector->get($pidSelectedService);
 
-        $pidUsername = $settings->get('pid_username');
-        $pidPassword = $settings->get('pid_password');
-        $pidShoulder = $settings->get('pid_shoulder');
         $pidTarget = $itemRepresentation->apiUrl();
         $itemID = $itemRepresentation->id();
 
         // If PIDs in existing fields, attempt to extract
         if ($settings->get('existing_pid_fields')) {
             $existingFields = $settings->get('existing_pid_fields');
-            $existingPID = $pidService->extract($pidShoulder, $existingFields, $itemRepresentation);
+            $existingPID = $pidService->extract($existingFields, $itemRepresentation);
             if ($existingPID) {
                 // Attempt to update PID service with Omeka resource URI
-                $addPID = $pidService->update($pidUsername, $pidPassword, $existingPID, $pidTarget);
+                $addPID = $pidService->update($existingPID, $pidTarget);
             } else if (empty($extractOnly)) {
                 // If no existing PID found and PID element checked, mint new PID
-                $addPID = $pidService->mint($pidUsername, $pidPassword, $pidShoulder, $pidTarget);
+                $addPID = $pidService->mint($pidTarget);
             }
         } else {
             // Mint new PID
-            $addPID = $pidService->mint($pidUsername, $pidPassword, $pidShoulder, $pidTarget);
+            $addPID = $pidService->mint($pidTarget);
         }
 
         if (!$addPID) {
@@ -259,12 +256,10 @@ class Module extends AbstractModule
         $pidSelectedService = $settings->get('pid_service');
         $pidService = $pidSelector->get($pidSelectedService);
 
-        $pidUsername = $settings->get('pid_username');
-        $pidPassword = $settings->get('pid_password');
         $itemID = $itemRepresentation->id();
 
         // Attempt to remove PID/target URI from PID Service
-        $deletedPID = $pidService->delete($pidUsername, $pidPassword, $itemPID);
+        $deletedPID = $pidService->delete($itemPID);
 
         // Ensure PID record exists
         $response = $api->search('pid_items', ['item_id' => $itemID]);

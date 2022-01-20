@@ -2,6 +2,7 @@
 namespace PersistentIdentifiers\PIDSelector;
 
 use Laminas\Http\Client as HttpClient;
+use Omeka\Settings\Settings as Settings;
 use Laminas\Stdlib\Parameters;
 
 /**
@@ -10,12 +11,21 @@ use Laminas\Stdlib\Parameters;
 class DataCite implements PIDSelectorInterface
 {
     /**
+     * @var Settings
+     */
+    protected $settings;
+
+    /**
      * @var HttpClient
      */
-    protected $httpClient;
+    protected $client;
 
-    public function __construct(HttpClient $httpClient) {
-        $this->client = $httpClient;
+    public function __construct(Settings $settings, HttpClient $client) {
+        $this->settings = $settings;
+        $this->pidUsername = $this->settings->get('datacite_username');
+        $this->pidPassword = $this->settings->get('datacite_password');
+        $this->pidShoulder = $this->settings->get('datacite_shoulder');
+        $this->client = $client;
     }
     
     public function getLabel()
@@ -23,22 +33,22 @@ class DataCite implements PIDSelectorInterface
         return 'DataCite'; // @translate
     }
 
-    public function mint($username, $password, $pidShoulder, $targetURI)
+    public function mint($targetURI)
     {
 
     }
 
-    public function update($username, $password, $existingPID, $targetURI)
+    public function update($existingPID, $targetURI)
     {
 
     }
 
-    public function delete($username, $password, $pidToDelete)
+    public function delete($pidToDelete)
     {
 
     }
 
-    public function extract($pidShoulder, $existingFields, $itemRepresentation)
+    public function extract($existingFields, $itemRepresentation)
     {
 
     }

@@ -25,9 +25,6 @@ class IndexController extends AbstractActionController
     public function __construct(Settings $settings, ServiceLocatorInterface $services)
     {
         $this->settings = $settings;
-        $this->pidUsername = $this->settings->get('pid_username');
-        $this->pidPassword = $this->settings->get('pid_password');
-        $this->pidShoulder = $this->settings->get('pid_shoulder');
         $this->services = $services;
         $this->api = $this->services->get('Omeka\ApiManager');
     }
@@ -61,9 +58,9 @@ class IndexController extends AbstractActionController
         $view = new ViewModel;
         $form = $this->getForm(EZIDForm::class);
         $form->setData([
-            'pid_shoulder' => $this->settings->get('pid_shoulder'),
-            'ezid_username' => $this->settings->get('pid_username'),
-            'ezid_password' => $this->settings->get('pid_password'),
+            'ezid_shoulder' => $this->settings->get('ezid_shoulder'),
+            'ezid_username' => $this->settings->get('ezid_username'),
+            'ezid_password' => $this->settings->get('ezid_password'),
         ]);
         $view->setVariable('form', $form);
 
@@ -72,9 +69,9 @@ class IndexController extends AbstractActionController
             if ($form->isValid()) {
                 $formData = $form->getData();
 
-                $this->settings->set('pid_shoulder', $formData['pid_shoulder']);
-                $this->settings->set('pid_username', $formData['ezid_username']);
-                $this->settings->set('pid_password', $formData['ezid_password']);
+                $this->settings->set('ezid_shoulder', $formData['ezid_shoulder']);
+                $this->settings->set('ezid_username', $formData['ezid_username']);
+                $this->settings->set('ezid_password', $formData['ezid_password']);
             }
         }
 
@@ -86,9 +83,9 @@ class IndexController extends AbstractActionController
         $view = new ViewModel;
         $form = $this->getForm(DataCiteForm::class);
         $form->setData([
-            'datacite_shoulder' => $this->settings->get('pid_shoulder'),
-            'datacite_username' => $this->settings->get('pid_username'),
-            'datacite_password' => $this->settings->get('pid_password'),
+            'datacite_shoulder' => $this->settings->get('datacite_shoulder'),
+            'datacite_username' => $this->settings->get('datacite_username'),
+            'datacite_password' => $this->settings->get('datacite_password'),
         ]);
         $view->setVariable('form', $form);
 
@@ -97,9 +94,9 @@ class IndexController extends AbstractActionController
             if ($form->isValid()) {
                 $formData = $form->getData();
 
-                $this->settings->set('pid_shoulder', $formData['pid_shoulder']);
-                $this->settings->set('pid_username', $formData['datacite_username']);
-                $this->settings->set('pid_password', $formData['datacite_password']);
+                $this->settings->set('datacite_shoulder', $formData['datacite_shoulder']);
+                $this->settings->set('datacite_username', $formData['datacite_username']);
+                $this->settings->set('datacite_password', $formData['datacite_password']);
             }
         }
 
@@ -146,17 +143,17 @@ class IndexController extends AbstractActionController
             $existingFields = $this->settings->get('existing_pid_fields');
             $response = $this->api()->read('items', $itemID);
             $itemRepresentation = $response->getContent();
-            $existingPID = $pidService->extract($this->pidShoulder, $existingFields, $itemRepresentation);
+            $existingPID = $pidService->extract($existingFields, $itemRepresentation);
             if ($existingPID) {
                 // Attempt to update PID service with Omeka resource URI
-                $addPID = $pidService->update($this->pidUsername, $this->pidPassword, $existingPID, $pidTarget);
+                $addPID = $pidService->update($existingPID, $pidTarget);
             } else if (empty($extractOnly)) {
                 // If no existing PID found and PID element checked, mint new PID
-                $addPID = $pidService->mint($this->pidUsername, $this->pidPassword, $this->pidShoulder, $pidTarget);
+                $addPID = $pidService->mint($pidTarget);
             }
         } else {
             // Mint new PID
-            $addPID = $pidService->mint($this->pidUsername, $this->pidPassword, $this->pidShoulder, $pidTarget);
+            $addPID = $pidService->mint($pidTarget);
         }
 
         if (!$addPID) {

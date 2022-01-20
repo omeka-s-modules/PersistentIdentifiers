@@ -2,6 +2,7 @@
 namespace PersistentIdentifiers\PIDSelector;
 
 use Laminas\Http\Client as HttpClient;
+use Omeka\Settings\Settings as Settings;
 use Laminas\Stdlib\Parameters;
 
 /**
@@ -10,12 +11,21 @@ use Laminas\Stdlib\Parameters;
 class EZID implements PIDSelectorInterface
 {
     /**
+     * @var Settings
+     */
+    protected $settings;
+
+    /**
      * @var HttpClient
      */
-    protected $httpClient;
+    protected $client;
 
-    public function __construct(HttpClient $httpClient) {
-        $this->client = $httpClient;
+    public function __construct(Settings $settings, HttpClient $client) {
+        $this->settings = $settings;
+        $this->pidUsername = $this->settings->get('ezid_username');
+        $this->pidPassword = $this->settings->get('ezid_password');
+        $this->pidShoulder = $this->settings->get('ezid_shoulder');
+        $this->client = $client;
     }
     
     public function getLabel()
@@ -23,17 +33,17 @@ class EZID implements PIDSelectorInterface
         return 'EZID'; // @translate
     }
 
-    public function mint($username, $password, $pidShoulder, $targetURI)
+    public function mint($targetURI)
     {
         // Build organization-specific mint URL
-        $shoulder = 'https://ezid.cdlib.org/shoulder/' . $pidShoulder;
+        $shoulder = 'https://ezid.cdlib.org/shoulder/' . $this->pidShoulder;
         // append EZID required prefix to pid target
         $target = '_target: ' . $targetURI;
 
         $request = $this->client
             ->setUri($shoulder)
             ->setMethod('POST')
-            ->setAuth($username, $password)
+            ->setAuth($this->pidUsername, $this->pidPassword)
             ->setRawBody($target);
         $request->getRequest()->getHeaders()->addHeaderLine('Content-type: text/plain');
         $response = $request->send();
@@ -45,7 +55,7 @@ class EZID implements PIDSelectorInterface
         }
     }
 
-    public function update($username, $password, $existingPID, $targetURI)
+    public function update($existingPID, $targetURI)
     {
         // Build organization-specific update URL
         $shoulder = 'https://ezid.cdlib.org/id/' . $existingPID;
@@ -57,7 +67,7 @@ class EZID implements PIDSelectorInterface
         $request = $this->client
             ->setUri($shoulder)
             ->setMethod('PUT')
-            ->setAuth($username, $password)
+            ->setAuth($this->pidUsername, $this->pidPassword)
             ->setRawBody($target);
         $request->getRequest()->getHeaders()->addHeaderLine('Content-type: text/plain');
         $request->getRequest()->setQuery(new Parameters(['update_if_exists' => 'yes']));
@@ -72,7 +82,7 @@ class EZID implements PIDSelectorInterface
         }
     }
 
-    public function delete($username, $password, $pidToDelete)
+    public function delete($pidToDelete)
     {
         // Build organization-specific delete URL
         $shoulder = 'https://ezid.cdlib.org/id/' . $pidToDelete;
@@ -84,7 +94,7 @@ class EZID implements PIDSelectorInterface
         $request = $this->client
             ->setUri($shoulder)
             ->setMethod('POST')
-            ->setAuth($username, $password)
+            ->setAuth($this->pidUsername, $this->pidPassword)
             ->setRawBody($target);
         $request->getRequest()->getHeaders()->addHeaderLine('Content-type: text/plain');
         $response = $request->send();
@@ -96,7 +106,7 @@ class EZID implements PIDSelectorInterface
         }
     }
 
-    public function extract($pidShoulder, $existingFields, $itemRepresentation)
+    public function extract($existingFields, $itemRepresentation)
     {
         foreach (explode(',', $existingFields) as $field) {
             $field = trim($field);
@@ -106,7 +116,7 @@ class EZID implements PIDSelectorInterface
                 foreach ($values as $value) {
                     // Find PID values by checking for institution's EZID shoulder within value
                     // Return first match
-                    if (strpos($value, $pidShoulder) !== false) {
+                    if (strpos($value, $this->pidShoulder) !== false) {
                         return $value;
                     }
                 }

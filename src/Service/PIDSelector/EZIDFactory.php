@@ -9,6 +9,9 @@ class EZIDFactory implements FactoryInterface
 {
     public function __invoke(ContainerInterface $services, $requestedName, array $options = null)
     {
-        return new EZID($services->get('Omeka\HttpClient'));
+        $settings = $services->get('Omeka\Settings');
+        $client = $services->get('Omeka\HttpClient');
+
+        return new EZID($settings, $client);
     }
 }

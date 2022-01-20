@@ -18,43 +18,35 @@ interface PIDSelectorInterface
     /**
      * Process a single PID mint (create) request.
      *
-     * @param string $username
-     * @param string $password
-     * @param string $pidShoulder
      * @param string $targetURI
      * @return string
      */
-    public function mint($username, $password, $pidShoulder, $targetURI);
+    public function mint($targetURI);
     
     /**
      * Process a single PID update request.
      *
-     * @param string $username
-     * @param string $password
      * @param string $existingPID
      * @param string $targetURI
      * @return string
      */
-    public function update($username, $password, $existingPID, $targetURI);
+    public function update($existingPID, $targetURI);
 
     /**
      * Process a single PID delete request.
      *
-     * @param string $username
-     * @param string $password
      * @param string $pidToDelete
      * @return string
      */
-    public function delete($username, $password, $pidToDelete);
+    public function delete($pidToDelete);
 
     /**
      * Extract PID value from designated metadata field(s)
      * and test for validity.
      *
-     * @param string $pidShoulder
      * @param array $existingFields
      * @param ItemRepresentation $itemRepresentation
      * @return string
      */
-    public function extract($pidShoulder, $existingFields, $itemRepresentation);
+    public function extract($existingFields, $itemRepresentation);
 }

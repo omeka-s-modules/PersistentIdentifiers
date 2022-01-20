@@ -9,7 +9,7 @@ class EZIDForm extends Form
     public function init()
     {
         $this->add([
-            'name' => 'pid_shoulder',
+            'name' => 'ezid_shoulder',
             'type' => 'text',
             'options' => [
                 'label' => 'NAAN & Shoulder Namespace', // @translate
@@ -17,7 +17,7 @@ class EZIDForm extends Form
                 'escape_info' => false,
             ],
             'attributes' => [
-                'id' => 'pid-shoulder',
+                'id' => 'ezid-shoulder',
                 'required' => true,
             ],
         ]);
