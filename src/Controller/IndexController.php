@@ -86,6 +86,7 @@ class IndexController extends AbstractActionController
             'datacite_shoulder' => $this->settings->get('datacite_shoulder'),
             'datacite_username' => $this->settings->get('datacite_username'),
             'datacite_password' => $this->settings->get('datacite_password'),
+            'datacite_creators_property_term' => $this->settings->get('datacite_creators_property_term'),
         ]);
         $view->setVariable('form', $form);
 
@@ -97,7 +98,13 @@ class IndexController extends AbstractActionController
                 $this->settings->set('datacite_shoulder', $formData['datacite_shoulder']);
                 $this->settings->set('datacite_username', $formData['datacite_username']);
                 $this->settings->set('datacite_password', $formData['datacite_password']);
+                $this->settings->set('datacite_creators_property_term', $formData['datacite_creators_property_term']);
+            } else {
+                // var_dump($this->params()->fromPost());
+                // var_dump($form->has('datacite_password'));
+                $this->messenger()->addFormErrors($form);
             }
+            // exit;
         }
 
         return $view;

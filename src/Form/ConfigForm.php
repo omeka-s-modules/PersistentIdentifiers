@@ -1,7 +1,6 @@
 <?php
 namespace PersistentIdentifiers\Form;
 
-use Omeka\Form\Element\ItemSetSelect;
 use Laminas\Form\Form;
 
 class ConfigForm extends Form

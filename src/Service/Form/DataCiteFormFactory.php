@@ -7,9 +7,10 @@ use Interop\Container\ContainerInterface;
 
 class DataCiteFormFactory implements FactoryInterface
 {
-    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
+    public function __invoke(ContainerInterface $services, $requestedName, array $options = null)
     {
         $form = new DataCiteForm;
+        $form->setSettings($services->get('Omeka\Settings'));
         return $form;
     }
 }
