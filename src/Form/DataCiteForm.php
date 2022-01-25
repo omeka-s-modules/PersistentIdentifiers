@@ -67,35 +67,93 @@ class DataCiteForm extends Form
                 'label' => 'DataCite required metadata', // @translate
             ],
         ]);
+
         $metadataFieldset = $this->get('required-metadata');
+
         $metadataFieldset->add([
-            'name' => 'datacite_creators_property_term',
+            'name' => 'datacite_title_property',
             'type' => PropertySelect::class,
             'options' => [
-                'label' => 'Creators property', // @translate
-                'info' => 'Local metadata field value to assign to DataCite creators property', // @translate
+                'label' => 'Title property', // @translate
+                'info' => 'Local metadata field value to assign to required DataCite title property', // @translate
                 'empty_option' => '',
             ],
             'attributes' => [
-                'id' => 'datacite-creators-property-term',
-                'required' => false,
-                'value' => $this->settings->get('datacite_creators_property_term'),
+                'id' => 'datacite-title-property',
+                'required' => true,
+                'value' => $this->settings->get('datacite_title_property'),
                 'class' => 'chosen-select',
                 'data-placeholder' => 'Select a property', // @translate
             ],
         ]);
 
-        // $addEvent = new Event('form.add_elements', $this);
-        // $this->getEventManager()->triggerEvent($addEvent);
-        //
-        // $inputFilter = $this->getInputFilter();
-        // $inputFilter->add([
-        //     'name' => 'datacite_creators_property_term',
-        //     'required' => false,
-        //     'allow_empty' => true,
-        // ]);
-        // $event = new Event('form.add_input_filters', $this, ['inputFilter' => $inputFilter]);
-        // $this->getEventManager()->triggerEvent($event);
+        $metadataFieldset->add([
+            'name' => 'datacite_creators_property',
+            'type' => PropertySelect::class,
+            'options' => [
+                'label' => 'Creators property', // @translate
+                'info' => 'Local metadata field value to assign to required DataCite creators property', // @translate
+                'empty_option' => '',
+            ],
+            'attributes' => [
+                'id' => 'datacite-creators-property',
+                'required' => true,
+                'value' => $this->settings->get('datacite_creators_property'),
+                'class' => 'chosen-select',
+                'data-placeholder' => 'Select a property', // @translate
+            ],
+        ]);
+
+        $metadataFieldset->add([
+            'name' => 'datacite_publisher_property',
+            'type' => PropertySelect::class,
+            'options' => [
+                'label' => 'Publisher property', // @translate
+                'info' => 'Local metadata field value to assign to required DataCite publisher property', // @translate
+                'empty_option' => '',
+            ],
+            'attributes' => [
+                'id' => 'datacite-publisher-property',
+                'required' => true,
+                'value' => $this->settings->get('datacite_publisher_property'),
+                'class' => 'chosen-select',
+                'data-placeholder' => 'Select a property', // @translate
+            ],
+        ]);
+
+        $metadataFieldset->add([
+            'name' => 'datacite_publicationYear_property',
+            'type' => PropertySelect::class,
+            'options' => [
+                'label' => 'Publication Year property', // @translate
+                'info' => 'Local metadata field value to assign to required DataCite publicationYear property', // @translate
+                'empty_option' => '',
+            ],
+            'attributes' => [
+                'id' => 'datacite-publicationYear-property',
+                'required' => true,
+                'value' => $this->settings->get('datacite_publicationYear_property'),
+                'class' => 'chosen-select',
+                'data-placeholder' => 'Select a property', // @translate
+            ],
+        ]);
+
+        $metadataFieldset->add([
+            'name' => 'datacite_resourceTypeGeneral_property',
+            'type' => PropertySelect::class,
+            'options' => [
+                'label' => 'Resource Type General property', // @translate
+                'info' => 'Local metadata field value to assign to required DataCite resourceTypeGeneral property', // @translate
+                'empty_option' => '',
+            ],
+            'attributes' => [
+                'id' => 'datacite-resourceTypeGeneral-property',
+                'required' => true,
+                'value' => $this->settings->get('datacite_resourceTypeGeneral_property'),
+                'class' => 'chosen-select',
+                'data-placeholder' => 'Select a property', // @translate
+            ],
+        ]);
     }
 
     /**
