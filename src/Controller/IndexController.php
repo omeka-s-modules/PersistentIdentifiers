@@ -160,7 +160,7 @@ class IndexController extends AbstractActionController
             // Mint new PID
             $addPID = $pidService->mint($pidTarget);
         }
-
+        // var_dump(gettype($addPID));
         if (!$addPID) {
             return null;
         } else {
@@ -174,7 +174,7 @@ class IndexController extends AbstractActionController
     // Attempt to remove PID/target URI from PID Service and delete from DB
     public function removePID($pidService, $toRemovePID, $itemID)
     {
-        $deletedPID = $pidService->delete($this->pidUsername, $this->pidPassword, $toRemovePID);
+        $deletedPID = $pidService->delete($toRemovePID);
 
         // Delete from DB
         $this->deletePID($itemID);
