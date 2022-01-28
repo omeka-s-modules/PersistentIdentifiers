@@ -134,9 +134,18 @@ class IndexController extends AbstractActionController
         $response = $this->api()->read('items', $this->params('id'));
         $item = $response->getContent();
 
+        $PIDresponse = $this->api()->search('pid_items', ['item_id' => $this->params('id')]);
+        $PIDcontent = $PIDresponse->getContent();
+
         $view = new ViewModel;
         $view->setVariable('item', $item);
-        $view->setVariable('resource', $item);
+
+        // Retrieve PID for display on item page
+        if (!empty($PIDcontent)) {
+            $PIDrecord = $PIDcontent[0];
+            $view->setVariable('pid', $PIDrecord->getPID());
+        }
+
         return $view;
     }
 
@@ -160,7 +169,6 @@ class IndexController extends AbstractActionController
             // Mint new PID
             $addPID = $pidService->mint($pidTarget);
         }
-        // var_dump(gettype($addPID));
         if (!$addPID) {
             return null;
         } else {
