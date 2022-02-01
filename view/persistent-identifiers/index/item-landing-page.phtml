@@ -23,7 +23,7 @@ $lang = $this->lang();
 <?php endif; ?>
 <h2><?php echo $translate('Metadata'); ?></h2>
 <?php echo $item->displayValues(); ?>
-<?php if ($pid): ?>
+<?php if (isset($pid)): ?>
 <h2><?php echo $translate('Persistent Identifier'); ?></h2>
 <div class="pid">
     <div class="value"><?php echo $pid ?></div>
