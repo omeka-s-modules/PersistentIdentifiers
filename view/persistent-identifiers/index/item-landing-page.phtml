@@ -2,12 +2,12 @@
 $translate = $this->plugin('translate');
 $escape = $this->plugin('escapeHtml');
 $this->htmlElement('body')->appendAttribute('class', 'item resource show');
-$itemMedia = $item->media();
 
 $filterLocale = false;
 $lang = $this->lang();
 ?>
 
+<?php if (isset($item)): ?>
 <?php echo $this->pageTitle($item->displayTitle(null, ($filterLocale ? $lang : null)), 2); ?>
 <h2><?php echo $translate('Item'); ?></h2>
 <?php $this->trigger('view.show.before'); ?>
@@ -40,7 +40,10 @@ if (count($itemSets) > 0):
     <?php endforeach; ?>
 </div>
 <?php endif; ?>
-<?php if ($itemMedia): ?>
+<?php
+$itemMedia = $item->media();
+if ($itemMedia):
+?>
 <h2><?php echo $translate('Media'); ?></h2>
 <div class="media-list">
     <?php foreach ($itemMedia as $media): ?>
@@ -48,7 +51,6 @@ if (count($itemSets) > 0):
     <?php endforeach; ?>
 </div>
 <?php endif; ?>
-
 <?php
 $page = $this->params()->fromQuery('page', 1);
 $property = $this->params()->fromQuery('property');
@@ -60,5 +62,23 @@ $subjectValues = $item->displaySubjectValues($page, 25, $property);
     <?php echo $subjectValues; ?>
 </div>
 <?php endif; ?>
-
 <?php $this->trigger('view.show.after'); ?>
+
+<?php elseif (isset($missingID)): ?>
+<?php echo $this->pageTitle('Resource Removed', 2); ?>
+<div class="body">
+    <?php if (isset($pid)): ?>
+    <?php echo sprintf(
+        $translate('The resource with persistent identifier %1$s and local ID %2$s has been removed from this Omeka S instance.'),
+        sprintf('<strong>%s</strong>', $pid),
+        sprintf('<strong>%s</strong>', $missingID)); ?>
+    <?php else: ?>
+    <?php echo sprintf(
+        $translate('The resource with local ID %1$s has been removed from this Omeka S instance.'),
+        sprintf('<strong>%s</strong>', $missingID)); ?>
+    <?php endif; ?>
+</div>
+<p>
+    <?php echo $this->hyperlink($translate('Back to Home Page'), $this->url('top', ['action' => 'index'])) ?>
+</p>
+<?php endif; ?>

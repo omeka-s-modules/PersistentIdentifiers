@@ -7,6 +7,7 @@ use PersistentIdentifiers\Form\DataCiteForm;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\View\Model\ViewModel;
+use Omeka\Api\Exception as ApiException;
 use Omeka\Settings\Settings;
 use Omeka\Stdlib\Message;
 
@@ -131,20 +132,26 @@ class IndexController extends AbstractActionController
 
     public function itemLandingPageAction()
     {
-        $response = $this->api()->read('items', $this->params('id'));
-        $item = $response->getContent();
-
-        $PIDresponse = $this->api()->search('pid_items', ['item_id' => $this->params('id')]);
-        $PIDcontent = $PIDresponse->getContent();
-
         $view = new ViewModel;
-        $view->setVariable('item', $item);
 
         // Retrieve PID for display on item page
+        $PIDresponse = $this->api()->search('pid_items', ['item_id' => $this->params('id')]);
+        $PIDcontent = $PIDresponse->getContent();
         if (!empty($PIDcontent)) {
             $PIDrecord = $PIDcontent[0];
             $view->setVariable('pid', $PIDrecord->getPID());
         }
+
+        // Display 'tombstone' message if item not found
+        try {
+            $response = $this->api()->read('items', $this->params('id'));
+        } catch (ApiException\NotFoundException $e) {
+            $view->setVariable('missingID', $this->params('id'));
+            return $view;
+        }
+
+        $item = $response->getContent();
+        $view->setVariable('item', $item);
 
         return $view;
     }
