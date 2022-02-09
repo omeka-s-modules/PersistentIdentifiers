@@ -40,7 +40,7 @@ class DataCite implements PIDSelectorInterface
 
     public function mint($targetURI, $itemRepresentation)
     {
-        // Supply DataCite-specific mint URL
+        // Supply organization-specific mint URL
         $shoulder = 'https://api.test.datacite.org/dois';
 
         // Handle multiple values for creator & title fields
@@ -96,7 +96,35 @@ class DataCite implements PIDSelectorInterface
 
     public function delete($pidToDelete)
     {
+        // Build organization-specific delete URL
+        $shoulder = 'https://api.test.datacite.org/dois/' . $pidToDelete;
 
+        // Update JSON data with hide event and DataCite tombstone URL
+        $dataciteArray = [
+            'data' => [
+                'attributes' => [
+                    'event' => 'hide',
+                    'url' => 'https://www.datacite.org/invalid.html'
+                ],
+            ],
+        ];
+        $dataciteJson = json_encode($dataciteArray);
+
+        // Send removal update request
+        // DOIs cannot be deleted, only indexing state and metadata can be changed
+        $request = $this->client
+            ->setUri($shoulder)
+            ->setMethod('PUT')
+            ->setAuth($this->pidUsername, $this->pidPassword)
+            ->setRawBody($dataciteJson);
+        $request->getRequest()->getHeaders()->addHeaderLine('Content-type: application/json');
+        $response = $request->send();
+        if (!$response->isSuccess()) {
+            return;
+        } else {
+            $data = json_decode($response->getBody(), true);
+            return $data['data']['id'];
+        }
     }
 
     public function extract($existingFields, $itemRepresentation)
