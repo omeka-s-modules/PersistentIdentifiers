@@ -19,15 +19,15 @@ class DataCiteForm extends Form
     public function init()
     {
         $this->add([
-            'name' => 'datacite_shoulder',
+            'name' => 'datacite_prefix',
             'type' => 'text',
             'options' => [
-                'label' => 'NAAN & Shoulder Namespace', // @translate
-                'info' => '<a target="_blank" href="https://ezid.cdlib.org/learn/id_basics">Name Assigning Authority Number (NAAN) and shoulder value</a> for your organization. Example: ark:/12345/k4.', // @translate
+                'label' => 'Repository DOI Prefix', // @translate
+                'info' => 'The <a target="_blank" href="https://support.datacite.org/docs/doi-basics#prefix">DOI prefix</a> associated with your DataCite repository. Example: 10.82157', // @translate
                 'escape_info' => false,
             ],
             'attributes' => [
-                'id' => 'datacite-shoulder',
+                'id' => 'datacite-prefix',
                 'required' => true,
             ],
         ]);
@@ -36,8 +36,8 @@ class DataCiteForm extends Form
             'name' => 'datacite_username',
             'type' => 'text',
             'options' => [
-                'label' => 'DataCite Username', // @translate
-                'info' => 'Ensure user has permission to create and update identifiers for above namespace.', // @translate
+                'label' => 'DataCite Repository ID', // @translate
+                'info' => 'Unique identifier assigned to your DataCite repository. Example: XQZU.RBBDXB', // @translate
             ],
             'attributes' => [
                 'id' => 'datacite-username',
@@ -51,7 +51,7 @@ class DataCiteForm extends Form
             'type' => 'password',
             'options' => [
                 'label' => 'DataCite Password', // @translate
-                'info' => 'Ensure user has permission to create and update identifiers for above namespace.', // @translate
+                'info' => 'Password associated with DataCite repository (note that this is different from your DataCite Member password).', // @translate
             ],
             'attributes' => [
                 'id' => 'datacite-password',
@@ -77,6 +77,7 @@ class DataCiteForm extends Form
                 'label' => 'Title property', // @translate
                 'info' => 'Local metadata field value to assign to required DataCite title property', // @translate
                 'empty_option' => '',
+                'term_as_value' => true,
             ],
             'attributes' => [
                 'id' => 'datacite-title-property',
@@ -94,6 +95,7 @@ class DataCiteForm extends Form
                 'label' => 'Creators property', // @translate
                 'info' => 'Local metadata field value to assign to required DataCite creators property', // @translate
                 'empty_option' => '',
+                'term_as_value' => true,
             ],
             'attributes' => [
                 'id' => 'datacite-creators-property',
@@ -111,6 +113,7 @@ class DataCiteForm extends Form
                 'label' => 'Publisher property', // @translate
                 'info' => 'Local metadata field value to assign to required DataCite publisher property', // @translate
                 'empty_option' => '',
+                'term_as_value' => true,
             ],
             'attributes' => [
                 'id' => 'datacite-publisher-property',
@@ -128,6 +131,7 @@ class DataCiteForm extends Form
                 'label' => 'Publication Year property', // @translate
                 'info' => 'Local metadata field value to assign to required DataCite publicationYear property', // @translate
                 'empty_option' => '',
+                'term_as_value' => true,
             ],
             'attributes' => [
                 'id' => 'datacite-publicationYear-property',
@@ -145,6 +149,7 @@ class DataCiteForm extends Form
                 'label' => 'Resource Type General property', // @translate
                 'info' => 'Local metadata field value to assign to required DataCite resourceTypeGeneral property', // @translate
                 'empty_option' => '',
+                'term_as_value' => true,
             ],
             'attributes' => [
                 'id' => 'datacite-resourceTypeGeneral-property',

@@ -19,9 +19,10 @@ interface PIDSelectorInterface
      * Process a single PID mint (create) request.
      *
      * @param string $targetURI
+     * @param ItemRepresentation $itemRepresentation
      * @return string
      */
-    public function mint($targetURI);
+    public function mint($targetURI, $itemRepresentation);
     
     /**
      * Process a single PID update request.

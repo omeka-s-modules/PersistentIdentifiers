@@ -225,11 +225,11 @@ class Module extends AbstractModule
                 $addPID = $pidService->update($existingPID, $pidTarget);
             } else if (empty($extractOnly)) {
                 // If no existing PID found and PID element checked, mint new PID
-                $addPID = $pidService->mint($pidTarget);
+                $addPID = $pidService->mint($pidTarget, $itemRepresentation);
             }
         } else {
             // Mint new PID
-            $addPID = $pidService->mint($pidTarget);
+            $addPID = $pidService->mint($pidTarget, $itemRepresentation);
         }
 
         if (!$addPID) {

@@ -33,7 +33,7 @@ class EZID implements PIDSelectorInterface
         return 'EZID'; // @translate
     }
 
-    public function mint($targetURI)
+    public function mint($targetURI, $itemRepresentation)
     {
         // Build organization-specific mint URL
         $shoulder = 'https://ezid.cdlib.org/shoulder/' . $this->pidShoulder;
