@@ -55,7 +55,7 @@ class EZID implements PIDSelectorInterface
         }
     }
 
-    public function update($existingPID, $targetURI)
+    public function update($existingPID, $targetURI, $itemRepresentation)
     {
         // Build organization-specific update URL
         $shoulder = 'https://ezid.cdlib.org/id/' . $existingPID;

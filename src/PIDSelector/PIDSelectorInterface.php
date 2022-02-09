@@ -29,9 +29,10 @@ interface PIDSelectorInterface
      *
      * @param string $existingPID
      * @param string $targetURI
+     * @param ItemRepresentation $itemRepresentation
      * @return string
      */
-    public function update($existingPID, $targetURI);
+    public function update($existingPID, $targetURI, $itemRepresentation);
 
     /**
      * Process a single PID delete request.

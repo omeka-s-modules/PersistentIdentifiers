@@ -89,9 +89,57 @@ class DataCite implements PIDSelectorInterface
         }
     }
 
-    public function update($existingPID, $targetURI)
+    public function update($existingPID, $targetURI, $itemRepresentation)
     {
+        // Build organization-specific update URL
+        $shoulder = 'https://api.test.datacite.org/dois/' . $existingPID;
 
+        // Handle multiple values for creator & title fields
+        $creators = $itemRepresentation->value($this->pidCreators, ['all' => true]);
+        foreach ($creators as $creator) {
+            $pidCreators[] = ['name' => $creator->value()];
+        }
+        $titles = $itemRepresentation->value($this->pidTitle, ['all' => true]);
+        foreach ($titles as $title) {
+            $pidTitles[] = ['title' => $title->value()];
+        }
+
+        // Build JSON data with DataCite prefix, required metadata & target URI
+        $dataciteArray = [
+            'data' => [
+                'type' => 'dois',
+                'attributes' => [
+                    'event' => 'publish',
+                    'prefix' => $this->pidPrefix,
+                    'creators' => $pidCreators,
+                    'titles' => $pidTitles,
+                    'publisher' => $itemRepresentation->value($this->pidPublisher)->value(),
+                    'publicationYear' => $itemRepresentation->value($this->pidPublicationYear)->value(),
+                    'types' => [
+                        'resourceTypeGeneral' => $itemRepresentation->value($this->pidResourceType)->value(),
+                    ],
+                    'url' => $targetURI
+                ],
+            ],
+        ];
+        $dataciteJson = json_encode($dataciteArray);
+
+        // Send update request
+        $request = $this->client
+            ->setUri($shoulder)
+            ->setMethod('PUT')
+            ->setAuth($this->pidUsername, $this->pidPassword)
+            ->setRawBody($dataciteJson);
+        $request->getRequest()->getHeaders()->addHeaderLine('Content-type: application/json');
+        $response = $request->send();
+        // Clear parameters for batch minting/editing
+        $request->resetParameters();
+        if (!$response->isSuccess()) {
+            return;
+        } else {
+            $data = json_decode($response->getBody(), true);
+            return $data['data']['id'];
+        }
     }
 
     public function delete($pidToDelete)
@@ -129,6 +177,20 @@ class DataCite implements PIDSelectorInterface
 
     public function extract($existingFields, $itemRepresentation)
     {
-
+        foreach (explode(',', $existingFields) as $field) {
+            $field = trim($field);
+            // Match input PID fields to existing resource metadata fields
+            if (array_key_exists($field, $itemRepresentation->values())) {
+                $values = $itemRepresentation->value($field, ['all' => true]);
+                foreach ($values as $value) {
+                    // Find PID values by checking for institution's EZID shoulder within value
+                    // Return first match
+                    if (strpos($value, $this->pidPrefix) !== false) {
+                        return $value;
+                    }
+                }
+            }
+        }
+        return;
     }
 }

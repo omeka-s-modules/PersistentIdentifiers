@@ -169,7 +169,7 @@ class IndexController extends AbstractActionController
             $existingPID = $pidService->extract($existingFields, $itemRepresentation);
             if ($existingPID) {
                 // Attempt to update PID service with Omeka resource URI
-                $addPID = $pidService->update($existingPID, $pidTarget);
+                $addPID = $pidService->update($existingPID, $pidTarget, $itemRepresentation);
             } else if (empty($extractOnly)) {
                 // If no existing PID found and PID element checked, mint new PID
                 $addPID = $pidService->mint($pidTarget, $itemRepresentation);
@@ -178,7 +178,7 @@ class IndexController extends AbstractActionController
             // Mint new PID
             $addPID = $pidService->mint($pidTarget, $itemRepresentation);
         }
-        if (!$addPID) {
+        if (empty($addPID)) {
             return null;
         } else {
             // Save to DB
