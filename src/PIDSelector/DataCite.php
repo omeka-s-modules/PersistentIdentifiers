@@ -52,6 +52,14 @@ class DataCite implements PIDSelectorInterface
         foreach ($titles as $title) {
             $pidTitles[] = ['title' => $title->value()];
         }
+        $publisher = $itemRepresentation->value($this->pidPublisher) ? $itemRepresentation->value($this->pidPublisher)->value() : null;
+        $publicationYear = $itemRepresentation->value($this->pidPublicationYear) ? $itemRepresentation->value($this->pidPublicationYear)->value() : null;
+        $type = $itemRepresentation->value($this->pidResourceType) ? $itemRepresentation->value($this->pidResourceType)->value() : null;
+
+        // If any required metadata is missing, don't mint
+        if (!isset($this->pidPrefix, $pidCreators, $pidTitles, $publisher, $publicationYear, $type)) {
+            return;
+        }
 
         // Build JSON data with DataCite prefix, required metadata & target URI
         $dataciteArray = [
@@ -62,10 +70,10 @@ class DataCite implements PIDSelectorInterface
                     'prefix' => $this->pidPrefix,
                     'creators' => $pidCreators,
                     'titles' => $pidTitles,
-                    'publisher' => $itemRepresentation->value($this->pidPublisher)->value(),
-                    'publicationYear' => $itemRepresentation->value($this->pidPublicationYear)->value(),
+                    'publisher' => $publisher,
+                    'publicationYear' => $publicationYear,
                     'types' => [
-                        'resourceTypeGeneral' => $itemRepresentation->value($this->pidResourceType)->value(),
+                        'resourceTypeGeneral' => $type,
                     ],
                     'url' => $targetURI
                 ],
@@ -103,6 +111,14 @@ class DataCite implements PIDSelectorInterface
         foreach ($titles as $title) {
             $pidTitles[] = ['title' => $title->value()];
         }
+        $publisher = $itemRepresentation->value($this->pidPublisher)->value() ?: null;
+        $publicationYear = $itemRepresentation->value($this->pidPublicationYear)->value() ?: null;
+        $type = $itemRepresentation->value($this->pidResourceType)->value() ?: null;
+
+        // If any required metadata is missing, don't mint
+        if (!isset($this->pidPrefix, $pidCreators, $pidTitles, $publisher, $publicationYear, $type)) {
+            return;
+        }
 
         // Build JSON data with DataCite prefix, required metadata & target URI
         $dataciteArray = [
@@ -113,10 +129,10 @@ class DataCite implements PIDSelectorInterface
                     'prefix' => $this->pidPrefix,
                     'creators' => $pidCreators,
                     'titles' => $pidTitles,
-                    'publisher' => $itemRepresentation->value($this->pidPublisher)->value(),
-                    'publicationYear' => $itemRepresentation->value($this->pidPublicationYear)->value(),
+                    'publisher' => $publisher,
+                    'publicationYear' => $publicationYear,
                     'types' => [
-                        'resourceTypeGeneral' => $itemRepresentation->value($this->pidResourceType)->value(),
+                        'resourceTypeGeneral' => $type,
                     ],
                     'url' => $targetURI
                 ],
