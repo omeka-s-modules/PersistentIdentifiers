@@ -111,9 +111,9 @@ class DataCite implements PIDSelectorInterface
         foreach ($titles as $title) {
             $pidTitles[] = ['title' => $title->value()];
         }
-        $publisher = $itemRepresentation->value($this->pidPublisher)->value() ?: null;
-        $publicationYear = $itemRepresentation->value($this->pidPublicationYear)->value() ?: null;
-        $type = $itemRepresentation->value($this->pidResourceType)->value() ?: null;
+        $publisher = $itemRepresentation->value($this->pidPublisher) ? $itemRepresentation->value($this->pidPublisher)->value() : null;
+        $publicationYear = $itemRepresentation->value($this->pidPublicationYear) ? $itemRepresentation->value($this->pidPublicationYear)->value() : null;
+        $type = $itemRepresentation->value($this->pidResourceType) ? $itemRepresentation->value($this->pidResourceType)->value() : null;
 
         // If any required metadata is missing, don't mint
         if (!isset($this->pidPrefix, $pidCreators, $pidTitles, $publisher, $publicationYear, $type)) {
