@@ -7,7 +7,7 @@ use Omeka\Entity\Item;
 /**
  * @Entity
  */
-class PIDItem extends AbstractEntity
+class PidItem extends AbstractEntity
 {
     /**
      * @Id

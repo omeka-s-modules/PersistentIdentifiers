@@ -32,15 +32,15 @@ class Module extends AbstractModule
     public function install(ServiceLocatorInterface $serviceLocator)
     {
         $connection = $serviceLocator->get('Omeka\Connection');
-        $connection->exec("CREATE TABLE piditem (id INT AUTO_INCREMENT NOT NULL, item_id INT NOT NULL, pid VARCHAR(255) NOT NULL, UNIQUE INDEX UNIQ_C127A48126F525E (item_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB;");
-        $connection->exec("ALTER TABLE piditem ADD CONSTRAINT FK_C127A48126F525E FOREIGN KEY (item_id) REFERENCES item (id) ON DELETE CASCADE;");
+        $connection->exec('CREATE TABLE pid_item (id INT AUTO_INCREMENT NOT NULL, item_id INT NOT NULL, pid VARCHAR(255) NOT NULL, UNIQUE INDEX UNIQ_C025A89B126F525E (item_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB;');
+        $connection->exec('ALTER TABLE pid_item ADD CONSTRAINT FK_C025A89B126F525E FOREIGN KEY (item_id) REFERENCES item (id) ON DELETE CASCADE;');
     }
     
     public function uninstall(ServiceLocatorInterface $serviceLocator)
     {
         $connection = $serviceLocator->get('Omeka\Connection');
-        $connection->exec("ALTER TABLE piditem DROP FOREIGN KEY FK_C127A48126F525E;");
-        $connection->exec('DROP TABLE piditem');
+        $connection->exec('ALTER TABLE pid_item DROP FOREIGN KEY FK_C025A89B126F525E');
+        $connection->exec('DROP TABLE pid_item');
     }
 
     public function attachListeners(SharedEventManagerInterface $sharedEventManager)
