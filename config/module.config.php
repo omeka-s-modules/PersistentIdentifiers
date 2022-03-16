@@ -23,7 +23,7 @@ return [
     ],
     'pid_services' => [
         'factories' => [
-            'ezid' => PersistentIdentifiers\Service\PIDSelector\EzidFactory::class,
+            'ezid' => PersistentIdentifiers\Service\PIDSelector\EZIDFactory::class,
             'datacite' => PersistentIdentifiers\Service\PIDSelector\DataCiteFactory::class,
         ],
     ],
