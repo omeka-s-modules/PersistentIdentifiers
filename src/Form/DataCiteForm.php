@@ -46,7 +46,6 @@ class DataCiteForm extends Form
         ]);
         
         $this->add([
-            // TODO: show password as 'dots'
             'name' => 'datacite_password',
             'type' => 'password',
             'options' => [
@@ -75,7 +74,7 @@ class DataCiteForm extends Form
             'type' => PropertySelect::class,
             'options' => [
                 'label' => 'Title property', // @translate
-                'info' => 'Local metadata field value to assign to required DataCite title property', // @translate
+                'info' => 'Local metadata field value to assign to required DataCite title property.', // @translate
                 'empty_option' => '',
                 'term_as_value' => true,
             ],
@@ -93,7 +92,7 @@ class DataCiteForm extends Form
             'type' => PropertySelect::class,
             'options' => [
                 'label' => 'Creators property', // @translate
-                'info' => 'Local metadata field value to assign to required DataCite creators property', // @translate
+                'info' => 'Local metadata field value to assign to required DataCite creators property.', // @translate
                 'empty_option' => '',
                 'term_as_value' => true,
             ],
@@ -111,7 +110,7 @@ class DataCiteForm extends Form
             'type' => PropertySelect::class,
             'options' => [
                 'label' => 'Publisher property', // @translate
-                'info' => 'Local metadata field value to assign to required DataCite publisher property', // @translate
+                'info' => 'Local metadata field value to assign to required DataCite publisher property.', // @translate
                 'empty_option' => '',
                 'term_as_value' => true,
             ],
@@ -129,7 +128,7 @@ class DataCiteForm extends Form
             'type' => PropertySelect::class,
             'options' => [
                 'label' => 'Publication Year property', // @translate
-                'info' => 'Local metadata field value to assign to required DataCite publicationYear property', // @translate
+                'info' => 'Local metadata field value to assign to required DataCite publicationYear property. Must be in YYYY format.', // @translate
                 'empty_option' => '',
                 'term_as_value' => true,
             ],
@@ -147,9 +146,10 @@ class DataCiteForm extends Form
             'type' => PropertySelect::class,
             'options' => [
                 'label' => 'Resource Type General property', // @translate
-                'info' => 'Local metadata field value to assign to required DataCite resourceTypeGeneral property', // @translate
+                'info' => 'Local metadata field value to assign to required DataCite resourceTypeGeneral property. Must match a <a target="_blank" href="https://support.datacite.org/docs/datacite-metadata-schema-v44-mandatory-properties#101-resourcetypegeneral">controlled resourceTypeGeneral vocabulary</a> value exactly.', // @translate
                 'empty_option' => '',
                 'term_as_value' => true,
+                'escape_info' => false,
             ],
             'attributes' => [
                 'id' => 'datacite-resourceTypeGeneral-property',
