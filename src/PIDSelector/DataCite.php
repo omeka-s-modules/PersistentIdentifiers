@@ -202,7 +202,7 @@ class DataCite implements PIDSelectorInterface
                     // Find PID values by checking for institution's EZID shoulder within value
                     // Return first match
                     if (strpos($value, $this->pidPrefix) !== false) {
-                        return $value;
+                        return trim($value);
                     }
                 }
             }
