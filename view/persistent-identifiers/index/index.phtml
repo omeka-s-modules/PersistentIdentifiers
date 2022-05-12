@@ -1,11 +1,21 @@
 <?php 
-$form->prepare(); 
+$this->headLink()->appendStylesheet($this->assetUrl('css/persistent-identifiers.css', 'PersistentIdentifiers'));
+$this->headScript()->appendFile($this->assetUrl('js/pid-config.js', 'PersistentIdentifiers'));
 $escapeHtml = $this->plugin('escapeHtml');
+$form->prepare();
+$ezidForm->prepare();
+$dataciteForm->prepare();
 ?>
 <?php echo $this->pageTitle($this->translate('Persistent Identifiers'), 1, $this->translate('Settings')); ?>
 <?php echo $this->form()->openTag($form); ?>
+<?php echo $this->form()->openTag($ezidForm); ?>
+<?php echo $this->form()->openTag($dataciteForm); ?>
 <div id="page-actions">
     <button><?php echo $this->escapeHtml($this->translate('Submit')); ?></button>
 </div>
-<?php echo $this->formCollection($form, false); ?>
+<?php echo $this->formCollection($form); ?>
+<?php echo $this->formCollection($ezidForm); ?>
+<?php echo $this->formCollection($dataciteForm); ?>
 <?php echo $this->form()->closeTag($form); ?>
+<?php echo $this->form()->closeTag($ezidForm); ?>
+<?php echo $this->form()->closeTag($dataciteForm); ?>

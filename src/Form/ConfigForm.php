@@ -2,9 +2,11 @@
 namespace PersistentIdentifiers\Form;
 
 use Laminas\Form\Form;
+use Omeka\Settings\Settings;
 
 class ConfigForm extends Form
 {
+
     public function init()
     {
         $this->add([

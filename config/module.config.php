@@ -83,28 +83,6 @@ return [
                         ],
                         'may_terminate' => true,
                         'child_routes' => [
-                            'ezid-configuration' => [
-                                'type' => 'Literal',
-                                'options' => [
-                                    'route' => '/ezid-configuration',
-                                    'defaults' => [
-                                        '__NAMESPACE__' => 'PersistentIdentifiers\Controller',
-                                        'controller' => 'Index',
-                                        'action' => 'ezid-configuration',
-                                    ],
-                                ],
-                            ],
-                            'datacite-configuration' => [
-                                'type' => 'Literal',
-                                'options' => [
-                                    'route' => '/datacite-configuration',
-                                    'defaults' => [
-                                        '__NAMESPACE__' => 'PersistentIdentifiers\Controller',
-                                        'controller' => 'Index',
-                                        'action' => 'datacite-configuration',
-                                    ],
-                                ],
-                            ],
                             'pid-edit' => [
                                 'type' => 'Literal',
                                 'options' => [
@@ -141,18 +119,6 @@ return [
                     [
                         'label' => 'Settings', // @translate
                         'route' => 'admin/persistent-identifiers',
-                        'resource' => 'PersistentIdentifiers\Controller\Index',
-                    ],
-                    [
-                        'label' => 'EZID Configuration', // @translate
-                        'route' => 'admin/persistent-identifiers/ezid-configuration',
-                        'controller' => 'Index',
-                        'resource' => 'PersistentIdentifiers\Controller\Index',
-                    ],
-                    [
-                        'label' => 'DataCite Configuration', // @translate
-                        'route' => 'admin/persistent-identifiers/datacite-configuration',
-                        'controller' => 'Index',
                         'resource' => 'PersistentIdentifiers\Controller\Index',
                     ],
                 ],

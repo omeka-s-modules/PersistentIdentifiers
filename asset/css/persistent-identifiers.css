@@ -16,3 +16,11 @@
 .pid-form-element button.active {
     display: inline-block;
 }
+
+.pid-configuration.active {
+    display: block;
+}
+
+.pid-configuration.inactive {
+    display: none;
+}

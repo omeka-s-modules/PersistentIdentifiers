@@ -7,7 +7,22 @@ class EZIDForm extends Form
 {
     public function init()
     {
+        // EZID configuration section
         $this->add([
+            'type' => 'fieldset',
+            'name' => 'ezid-configuration',
+            'options' => [
+                'label' => 'EZID Configuration', // @translate
+            ],
+            'attributes' => [
+                'id' => 'ezid-configuration',
+                'class' => 'pid-configuration inactive',
+            ],
+        ]);
+
+        $ezidFieldset = $this->get('ezid-configuration');
+
+        $ezidFieldset->add([
             'name' => 'ezid_shoulder',
             'type' => 'text',
             'options' => [
@@ -21,7 +36,7 @@ class EZIDForm extends Form
             ],
         ]);
 
-        $this->add([
+        $ezidFieldset->add([
             'name' => 'ezid_username',
             'type' => 'text',
             'options' => [
@@ -34,8 +49,7 @@ class EZIDForm extends Form
             ],
         ]);
         
-        $this->add([
-            // TODO: show password as 'dots'
+        $ezidFieldset->add([
             'name' => 'ezid_password',
             'type' => 'password',
             'options' => [

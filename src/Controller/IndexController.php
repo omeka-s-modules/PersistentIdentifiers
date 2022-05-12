@@ -34,75 +34,76 @@ class IndexController extends AbstractActionController
     {
         $view = new ViewModel;
         $form = $this->getForm(ConfigForm::class);
+        $ezidForm = $this->getForm(EZIDForm::class);
+        $dataciteForm = $this->getForm(DataCiteForm::class);
+
         $form->setData([
+            // Get/set main settings
+            'pid_service' => $this->settings->get('pid_service'),
             'pid_assign_all' => $this->settings->get('pid_assign_all'),
             'existing_pid_fields' => $this->settings->get('existing_pid_fields'),
-            'pid_service' => $this->settings->get('pid_service'),
         ]);
-        $view->setVariable('form', $form);
         
+        // Get/set ezid settings
+        $ezidData['ezid-configuration']['ezid_shoulder'] = $this->settings->get('ezid_shoulder');
+        $ezidData['ezid-configuration']['ezid_username'] = $this->settings->get('ezid_username');
+        $ezidData['ezid-configuration']['ezid_password'] = $this->settings->get('ezid_password');
+
+        $ezidForm->setData($ezidData);
+
+        // Get/set datacite settings
+        $dataciteData['datacite-configuration']['datacite_prefix'] = $this->settings->get('datacite_prefix');
+        $dataciteData['datacite-configuration']['datacite_username'] = $this->settings->get('datacite_username');
+        $dataciteData['datacite-configuration']['datacite_password'] = $this->settings->get('datacite_password');
+        $dataciteData['datacite-required-metadata']['datacite_title_property'] = $this->settings->get('datacite_title_property');
+        $dataciteData['datacite-required-metadata']['datacite_creators_property'] = $this->settings->get('datacite_creators_property');
+        $dataciteData['datacite-required-metadata']['datacite_publisher_property'] = $this->settings->get('datacite_publisher_property');
+        $dataciteData['datacite-required-metadata']['datacite_publicationYear_property'] = $this->settings->get('datacite_publicationYear_property');
+        $dataciteData['datacite-required-metadata']['datacite_resourceTypeGeneral_property'] = $this->settings->get('datacite_resourceTypeGeneral_property');
+
+        $dataciteForm->setData($dataciteData);
+
+        $view->setVariable('form', $form);
+        $view->setVariable('ezidForm', $ezidForm);
+        $view->setVariable('dataciteForm', $dataciteForm);
+
         if ($this->getRequest()->isPost()) {
             $form->setData($this->params()->fromPost());
             if ($form->isValid()) {
+
                 $formData = $form->getData();
+
+                // Set main settings
+                $this->settings->set('pid_service', $formData['pid_service']);
                 $this->settings->set('pid_assign_all', $formData['pid_assign_all']);
                 $this->settings->set('existing_pid_fields', $formData['existing_pid_fields']);
-                $this->settings->set('pid_service', $formData['pid_service']);
             }
-        }
 
-        return $view;
-    }
+            $ezidForm->setData($this->params()->fromPost());
+            if ($ezidForm->isValid()) {
 
-    public function EzidConfigurationAction()
-    {
-        $view = new ViewModel;
-        $form = $this->getForm(EZIDForm::class);
-        $form->setData([
-            'ezid_shoulder' => $this->settings->get('ezid_shoulder'),
-            'ezid_username' => $this->settings->get('ezid_username'),
-            'ezid_password' => $this->settings->get('ezid_password'),
-        ]);
-        $view->setVariable('form', $form);
+                $ezidFormData = $ezidForm->getData();
 
-        if ($this->getRequest()->isPost()) {
-            $form->setData($this->params()->fromPost());
-            if ($form->isValid()) {
-                $formData = $form->getData();
-
-                $this->settings->set('ezid_shoulder', $formData['ezid_shoulder']);
-                $this->settings->set('ezid_username', $formData['ezid_username']);
-                $this->settings->set('ezid_password', $formData['ezid_password']);
+                // Set ezid settings
+                $this->settings->set('ezid_shoulder', $ezidFormData['ezid-configuration']['ezid_shoulder']);
+                $this->settings->set('ezid_username', $ezidFormData['ezid-configuration']['ezid_username']);
+                $this->settings->set('ezid_password', $ezidFormData['ezid-configuration']['ezid_password']);
             }
-        }
 
-        return $view;
-    }
-    
-    public function DataciteConfigurationAction()
-    {
-        $view = new ViewModel;
-        $form = $this->getForm(DataCiteForm::class);
-        $form->setData([
-            'datacite_prefix' => $this->settings->get('datacite_prefix'),
-            'datacite_username' => $this->settings->get('datacite_username'),
-            'datacite_password' => $this->settings->get('datacite_password'),
-        ]);
-        $view->setVariable('form', $form);
+            $dataciteForm->setData($this->params()->fromPost());
+            if ($dataciteForm->isValid()) {
 
-        if ($this->getRequest()->isPost()) {
-            $form->setData($this->params()->fromPost());
-            if ($form->isValid()) {
-                $formData = $form->getData();
+                $dataciteFormData = $dataciteForm->getData();
 
-                $this->settings->set('datacite_prefix', $formData['datacite_prefix']);
-                $this->settings->set('datacite_username', $formData['datacite_username']);
-                $this->settings->set('datacite_password', $formData['datacite_password']);
-                $this->settings->set('datacite_title_property', $formData['required-metadata']['datacite_title_property']);
-                $this->settings->set('datacite_creators_property', $formData['required-metadata']['datacite_creators_property']);
-                $this->settings->set('datacite_publisher_property', $formData['required-metadata']['datacite_publisher_property']);
-                $this->settings->set('datacite_publicationYear_property', $formData['required-metadata']['datacite_publicationYear_property']);
-                $this->settings->set('datacite_resourceTypeGeneral_property', $formData['required-metadata']['datacite_resourceTypeGeneral_property']);
+                // Set datacite settings
+                $this->settings->set('datacite_prefix', $dataciteFormData['datacite-configuration']['datacite_prefix']);
+                $this->settings->set('datacite_username', $dataciteFormData['datacite-configuration']['datacite_username']);
+                $this->settings->set('datacite_password', $dataciteFormData['datacite-configuration']['datacite_password']);
+                $this->settings->set('datacite_title_property', $dataciteFormData['datacite-required-metadata']['datacite_title_property']);
+                $this->settings->set('datacite_creators_property', $dataciteFormData['datacite-required-metadata']['datacite_creators_property']);
+                $this->settings->set('datacite_publisher_property', $dataciteFormData['datacite-required-metadata']['datacite_publisher_property']);
+                $this->settings->set('datacite_publicationYear_property', $dataciteFormData['datacite-required-metadata']['datacite_publicationYear_property']);
+                $this->settings->set('datacite_resourceTypeGeneral_property', $dataciteFormData['datacite-required-metadata']['datacite_resourceTypeGeneral_property']);
             }
         }
 

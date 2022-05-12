@@ -18,7 +18,22 @@ class DataCiteForm extends Form
 
     public function init()
     {
+        // DataCite configuration section
         $this->add([
+            'type' => 'fieldset',
+            'name' => 'datacite-configuration',
+            'options' => [
+                'label' => 'DataCite Configuration', // @translate
+            ],
+            'attributes' => [
+                'id' => 'datacite-configuration',
+                'class' => 'pid-configuration inactive',
+            ],
+        ]);
+
+        $dataciteFieldset = $this->get('datacite-configuration');
+
+        $dataciteFieldset->add([
             'name' => 'datacite_prefix',
             'type' => 'text',
             'options' => [
@@ -32,7 +47,7 @@ class DataCiteForm extends Form
             ],
         ]);
 
-        $this->add([
+        $dataciteFieldset->add([
             'name' => 'datacite_username',
             'type' => 'text',
             'options' => [
@@ -44,8 +59,8 @@ class DataCiteForm extends Form
                 'required' => true,
             ],
         ]);
-        
-        $this->add([
+
+        $dataciteFieldset->add([
             'name' => 'datacite_password',
             'type' => 'password',
             'options' => [
@@ -58,18 +73,22 @@ class DataCiteForm extends Form
             ],
         ]);
 
-        // Required metadata section
+        // DataCite Required metadata section
         $this->add([
             'type' => 'fieldset',
-            'name' => 'required-metadata',
+            'name' => 'datacite-required-metadata',
             'options' => [
-                'label' => 'DataCite required metadata', // @translate
+                'label' => 'DataCite Required metadata', // @translate
+            ],
+            'attributes' => [
+                'id' => 'datacite-required-metadata',
+                'class' => 'pid-configuration inactive',
             ],
         ]);
 
-        $metadataFieldset = $this->get('required-metadata');
+        $dataciteMetadataFieldset = $this->get('datacite-required-metadata');
 
-        $metadataFieldset->add([
+        $dataciteMetadataFieldset->add([
             'name' => 'datacite_title_property',
             'type' => PropertySelect::class,
             'options' => [
@@ -87,7 +106,7 @@ class DataCiteForm extends Form
             ],
         ]);
 
-        $metadataFieldset->add([
+        $dataciteMetadataFieldset->add([
             'name' => 'datacite_creators_property',
             'type' => PropertySelect::class,
             'options' => [
@@ -105,7 +124,7 @@ class DataCiteForm extends Form
             ],
         ]);
 
-        $metadataFieldset->add([
+        $dataciteMetadataFieldset->add([
             'name' => 'datacite_publisher_property',
             'type' => PropertySelect::class,
             'options' => [
@@ -123,7 +142,7 @@ class DataCiteForm extends Form
             ],
         ]);
 
-        $metadataFieldset->add([
+        $dataciteMetadataFieldset->add([
             'name' => 'datacite_publicationYear_property',
             'type' => PropertySelect::class,
             'options' => [
@@ -141,7 +160,7 @@ class DataCiteForm extends Form
             ],
         ]);
 
-        $metadataFieldset->add([
+        $dataciteMetadataFieldset->add([
             'name' => 'datacite_resourceTypeGeneral_property',
             'type' => PropertySelect::class,
             'options' => [
