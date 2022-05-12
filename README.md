@@ -4,7 +4,8 @@ Create/import & assign persistent identifiers (PIDs) to Omeka S items. PIDs can 
 
 The PID module is designed in a flexible way to better connect with various PID service APIs for PID creation or import. The module can currently connect to the following PID APIs (i.e. all other PID services will require additional code):
 
-- [ARKs](https://n2t.net/e/ark_ids.html)
+- [ARKs](https://arks.org) via [EZID](https://ezid.cdlib.org)
+- [DOIs](https://www.doi.org) via [DataCite](https://datacite.org)
 
 See the Omeka S user manual for user documentation.
 
