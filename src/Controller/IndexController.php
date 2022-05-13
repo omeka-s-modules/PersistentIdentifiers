@@ -105,6 +105,8 @@ class IndexController extends AbstractActionController
                 $this->settings->set('datacite_publicationYear_property', $dataciteFormData['datacite-required-metadata']['datacite_publicationYear_property']);
                 $this->settings->set('datacite_resourceTypeGeneral_property', $dataciteFormData['datacite-required-metadata']['datacite_resourceTypeGeneral_property']);
             }
+
+            $this->messenger()->addSuccess('Configuration and password updated');
         }
 
         return $view;
