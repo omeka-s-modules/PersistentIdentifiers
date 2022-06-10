@@ -25,6 +25,13 @@ class Module extends AbstractModule
         parent::onBootstrap($event);
 
         $acl = $this->getServiceLocator()->get('Omeka\Acl');
+        // Allow all users to access item pages
+        $acl->allow(
+            null,
+            ['PersistentIdentifiers\Api\Adapter\PIDItemAdapter',
+             'PersistentIdentifiers\Entity\PidItem',
+            ]
+        );
         // Allow visitors to view PID generic item landing page.
         $acl->allow(null, 'PersistentIdentifiers\Controller\Index');
     }
