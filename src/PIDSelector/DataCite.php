@@ -41,7 +41,7 @@ class DataCite implements PIDSelectorInterface
     public function mint($targetURI, $itemRepresentation)
     {
         // Supply organization-specific mint URL
-        $shoulder = 'https://api.test.datacite.org/dois';
+        $shoulder = 'https://api.datacite.org/dois';
 
         // Handle multiple values for creator & title fields
         $creators = $itemRepresentation->value($this->pidCreators, ['all' => true]);
@@ -100,7 +100,7 @@ class DataCite implements PIDSelectorInterface
     public function update($existingPID, $targetURI, $itemRepresentation)
     {
         // Build organization-specific update URL
-        $shoulder = 'https://api.test.datacite.org/dois/' . $existingPID;
+        $shoulder = 'https://api.datacite.org/dois/' . $existingPID;
 
         // Handle multiple values for creator & title fields
         $creators = $itemRepresentation->value($this->pidCreators, ['all' => true]);
@@ -161,7 +161,7 @@ class DataCite implements PIDSelectorInterface
     public function delete($pidToDelete)
     {
         // Build organization-specific delete URL
-        $shoulder = 'https://api.test.datacite.org/dois/' . $pidToDelete;
+        $shoulder = 'https://api.datacite.org/dois/' . $pidToDelete;
 
         // Update JSON data with hide event and DataCite tombstone URL
         $dataciteArray = [
