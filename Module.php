@@ -32,8 +32,8 @@ class Module extends AbstractModule
              'PersistentIdentifiers\Entity\PidItem',
             ]
         );
-        // Allow visitors to view PID generic item landing page.
-        $acl->allow(null, 'PersistentIdentifiers\Controller\Index');
+        // Allow all visitors to view PID generic item landing page.
+        $acl->allow(null, 'PersistentIdentifiers\Controller\Index', 'item-landing-page');
     }
 
     public function install(ServiceLocatorInterface $serviceLocator)
