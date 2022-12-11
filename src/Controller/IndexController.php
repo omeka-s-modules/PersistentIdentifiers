@@ -22,6 +22,8 @@ class IndexController extends AbstractActionController
      * @var ServiceLocatorInterface
      */
     protected $services;
+    
+    protected $api;
 
     public function __construct(Settings $settings, ServiceLocatorInterface $services)
     {
