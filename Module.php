@@ -56,20 +56,47 @@ class Module extends AbstractModule
         // Add PID element to item edit form
         $sharedEventManager->attach(
             'Omeka\Controller\Admin\Item',
-            'view.edit.form.before',
+            'view.edit.form.advanced',
             function (Event $event) {
                 $view = $event->getTarget();
-                echo $view->partial('persistent-identifiers/common/resource-fields-edit');
+                $view->form->add([
+                            'name' => 'o:pid[o:id]',
+                            'type' => ModuleElement\PIDEditor::class,
+                            'options' => [
+                                'label' => 'Persistent Identifier', // @translate
+                                'info' => 'Mint & assign PID from chosen service. (Note: PID is immediately assigned to item)', // @translate
+                            ],
+                        ]);
+                $pid = $view->form->get('o:pid[o:id]');
+                // Pass item resource to PID form for PID target
+                $pid->setValue($view->resource);
+                echo $view->formRow($pid);
             }
         );
 
         // Add PID checkbox to new item form
         $sharedEventManager->attach(
             'Omeka\Controller\Admin\Item',
-            'view.add.form.before',
+            'view.add.form.advanced',
             function (Event $event) {
                 $view = $event->getTarget();
-                echo $view->partial('persistent-identifiers/common/resource-fields-add');
+                $view->form->add([
+                            'name' => 'o:pid[o:id]',
+                            'type' => 'checkbox',
+                            'options' => [
+                                'label' => 'Assign Persistent Identifier', // @translate
+                                'info' => 'Mint & assign PID from chosen service.', // @translate
+                            ],
+                        ]);
+                $pid = $view->form->get('o:pid[o:id]');
+                // Disable checkbox and automatically assign PID if specified in settings
+                if ($view->setting('pid_assign_all')) {
+                    $pid->setAttribute('value', true);
+                    $pid->setAttribute('disabled', true);
+                }
+                // Pass item resource to PID form for PID target
+                $pid->setValue($view->resource);
+                echo $view->formRow($pid);
             }
         );
 
