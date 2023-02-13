@@ -1,0 +1,258 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+# Translators:
+# Rubén Alcaraz Martínez <rubenalcarazmartinez@gmail.com>, 2023
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-06-29 11:15-0700\n"
+"PO-Revision-Date: 2022-06-29 18:17+0000\n"
+"Last-Translator: Rubén Alcaraz Martínez <rubenalcarazmartinez@gmail.com>, 2023\n"
+"Language-Team: Catalan (Spain) (https://www.transifex.com/omeka/teams/14184/ca_ES/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ca_ES\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: Module.php:113 view/persistent-identifiers/index/item-landing-page.phtml:27
+msgid "Persistent Identifier"
+msgstr "Identificadors persistents"
+
+#: view/persistent-identifiers/common/pid-edit-form.phtml:23
+msgid "Mint PID"
+msgstr ""
+
+#: view/persistent-identifiers/common/pid-edit-form.phtml:24
+#: view/persistent-identifiers/common/pid-edit-form.phtml:33
+msgid "Remove PID"
+msgstr "Suprimeix el PID"
+
+#: view/persistent-identifiers/common/pid-edit-form.phtml:35
+#, php-format
+msgid ""
+"<strong>Warning</strong>: this action will remove <strong>%s</strong> from "
+"item <strong>%s</strong>, breaking any incoming Omeka URI links, and cannot "
+"be undone."
+msgstr ""
+"<strong>Alerta</strong>: aquesta acció suprimirà <strong>%s</strong> del "
+"recurs <strong>%s</strong>, eliminant qualsevol enllaç entrant, i no es pot "
+"desfer."
+
+#: view/persistent-identifiers/common/pid-edit-form.phtml:39
+msgid "Are you sure you would like to remove the PID from this item?"
+msgstr "Esteu segur que voleu suprimir el PID d'aquest recurs?"
+
+#: view/persistent-identifiers/common/pid-edit-form.phtml:40
+msgid "Confirm Remove PID"
+msgstr "Confirmeu la supressió del PID"
+
+#: view/persistent-identifiers/index/index.phtml:9
+msgid "Persistent Identifiers"
+msgstr "Identificadors persistents"
+
+#: view/persistent-identifiers/index/item-landing-page.phtml:72
+#, php-format
+msgid ""
+"The resource with persistent identifier %1$s and local ID %2$s has been "
+"removed from this Omeka S instance."
+msgstr ""
+
+#: view/persistent-identifiers/index/item-landing-page.phtml:77
+#, php-format
+msgid ""
+"The resource with local ID %1$s has been removed from this Omeka S instance."
+msgstr ""
+
+#: view/persistent-identifiers/index/item-landing-page.phtml:82
+msgid "Back to Home Page"
+msgstr "Pàgina d'inici"
+
+#: Module.php:136
+msgid ""
+"Mint & assign PID to any item that does not already have one, or remove any "
+"existing PIDs."
+msgstr ""
+
+#: Module.php:138
+msgid "Mint PIDs"
+msgstr ""
+
+#: Module.php:139
+msgid "Remove PIDs"
+msgstr "Suprimeix els PID"
+
+#: Module.php:140
+msgid "[No action]"
+msgstr "[Cap acció]"
+
+#: view/persistent-identifiers/common/resource-fields-edit.phtml:15
+msgid ""
+"Mint & assign PID from chosen service. (Note: PID is immediately assigned to"
+" item)"
+msgstr ""
+
+#: view/persistent-identifiers/common/resource-fields-add.phtml:13
+#: view/persistent-identifiers/common/resource-fields-add.phtml:26
+msgid "Assign Persistent Identifier"
+msgstr "Assigna un identificador persistent"
+
+#: view/persistent-identifiers/common/resource-fields-add.phtml:14
+#: view/persistent-identifiers/common/resource-fields-add.phtml:27
+msgid "Mint & assign PID from chosen service."
+msgstr ""
+
+#: src/Form/EZIDForm.php:15
+msgid "EZID Configuration"
+msgstr "Configuració EZID"
+
+#: src/Form/EZIDForm.php:29
+msgid "NAAN & Shoulder Namespace"
+msgstr ""
+
+#: src/Form/EZIDForm.php:30
+msgid ""
+"<a target=\"_blank\" href=\"https://ezid.cdlib.org/learn/id_basics\">Name "
+"Assigning Authority Number (NAAN) and shoulder value</a> for your "
+"organization. Example: ark:/12345/k4."
+msgstr ""
+
+#: src/Form/EZIDForm.php:43
+msgid "EZID Username"
+msgstr "Nom d'usuari EZID"
+
+#: src/Form/EZIDForm.php:44 src/Form/EZIDForm.php:57
+msgid ""
+"Ensure user has permission to create and update identifiers for above "
+"namespace."
+msgstr ""
+"Assegureu-vos que l'usuari té permisos per crear i actualitzar els "
+"identificadors de l'espai de noms anterior."
+
+#: src/Form/EZIDForm.php:56
+msgid "EZID Password"
+msgstr "Contrasenya EZID"
+
+#: src/Form/ConfigForm.php:32
+msgid "Assign PIDs to new items"
+msgstr "Assigna PIDs als nous recursos"
+
+#: src/Form/ConfigForm.php:33
+msgid ""
+"Mint and assign Persistent Identifiers (PIDs) to all newly created or "
+"imported items."
+msgstr ""
+
+#: src/Form/ConfigForm.php:44
+msgid "Fields with existing PIDs"
+msgstr ""
+
+#: src/Form/ConfigForm.php:45
+msgid ""
+"List of fields (such as dc.identifier), separated by commas, that may "
+"contain existing PID values. If found during import or PID mint, existing "
+"PID will be assigned to item."
+msgstr ""
+
+#: src/Form/DataCiteForm.php:26
+msgid "DataCite Configuration"
+msgstr ""
+
+#: src/Form/DataCiteForm.php:40
+msgid "Repository DOI Prefix"
+msgstr "Prefix DOI del repositori"
+
+#: src/Form/DataCiteForm.php:41
+msgid ""
+"The <a target=\"_blank\" href=\"https://support.datacite.org/docs/doi-"
+"basics#prefix\">DOI prefix</a> associated with your DataCite repository. "
+"Example: 10.82157"
+msgstr ""
+
+#: src/Form/DataCiteForm.php:54
+msgid "DataCite Repository ID"
+msgstr ""
+
+#: src/Form/DataCiteForm.php:55
+msgid ""
+"Unique identifier assigned to your DataCite repository. Example: XQZU.RBBDXB"
+msgstr ""
+
+#: src/Form/DataCiteForm.php:67
+msgid "DataCite Password"
+msgstr ""
+
+#: src/Form/DataCiteForm.php:68
+msgid ""
+"Password associated with DataCite repository (note that this is different "
+"from your DataCite Member password)."
+msgstr ""
+
+#: src/Form/DataCiteForm.php:81
+msgid "DataCite Required metadata"
+msgstr ""
+
+#: src/Form/DataCiteForm.php:95
+msgid "Title property"
+msgstr ""
+
+#: src/Form/DataCiteForm.php:96
+msgid ""
+"Local metadata field value to assign to required DataCite title property."
+msgstr ""
+
+#: src/Form/DataCiteForm.php:113
+msgid "Creators property"
+msgstr ""
+
+#: src/Form/DataCiteForm.php:114
+msgid ""
+"Local metadata field value to assign to required DataCite creators property."
+msgstr ""
+
+#: src/Form/DataCiteForm.php:131
+msgid "Publisher property"
+msgstr ""
+
+#: src/Form/DataCiteForm.php:132
+msgid ""
+"Local metadata field value to assign to required DataCite publisher "
+"property."
+msgstr ""
+
+#: src/Form/DataCiteForm.php:149
+msgid "Publication Year property"
+msgstr ""
+
+#: src/Form/DataCiteForm.php:150
+msgid ""
+"Local metadata field value to assign to required DataCite publicationYear "
+"property. Must be in YYYY format."
+msgstr ""
+
+#: src/Form/DataCiteForm.php:167
+msgid "Resource Type General property"
+msgstr ""
+
+#: src/Form/DataCiteForm.php:168
+msgid ""
+"Local metadata field value to assign to required DataCite "
+"resourceTypeGeneral property. Must match a <a target=\"_blank\" "
+"href=\"https://support.datacite.org/docs/datacite-metadata-"
+"schema-v44-mandatory-properties#101-resourcetypegeneral\">controlled "
+"resourceTypeGeneral vocabulary</a> value exactly."
+msgstr ""
+
+#: src/PIDSelector/DataCite.php:38
+msgid "DataCite"
+msgstr "DataCite"
+
+#: src/PIDSelector/EZID.php:33
+msgid "EZID"
+msgstr "EZID"
