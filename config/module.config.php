@@ -25,6 +25,7 @@ return [
         'factories' => [
             'ezid' => PersistentIdentifiers\Service\PIDSelector\EZIDFactory::class,
             'datacite' => PersistentIdentifiers\Service\PIDSelector\DataCiteFactory::class,
+            'localark' => PersistentIdentifiers\Service\PIDSelector\LocalARKFactory::class,
         ],
     ],
     'api_adapters' => [
@@ -55,6 +56,7 @@ return [
             'PersistentIdentifiers\Form\ConfigForm' => 'PersistentIdentifiers\Service\Form\ConfigFormFactory',
             'PersistentIdentifiers\Form\EZIDForm' => 'PersistentIdentifiers\Service\Form\EZIDFormFactory',
             'PersistentIdentifiers\Form\DataCiteForm' => 'PersistentIdentifiers\Service\Form\DataCiteFormFactory',
+            'PersistentIdentifiers\Form\LocalARKForm' => 'PersistentIdentifiers\Service\Form\LocalARKFormFactory',
         ],
     ],
     'view_helpers' => [

@@ -17,6 +17,7 @@ class ConfigForm extends Form
                 'value_options' => [
                     'ezid' => 'EZID (ARKs)',
                     'datacite' => 'DataCite (DOIs)',
+                    'localark' => 'Local ARK',
                 ],
             ],
             'attributes' => [

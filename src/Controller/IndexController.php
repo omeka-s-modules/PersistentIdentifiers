@@ -4,6 +4,7 @@ namespace PersistentIdentifiers\Controller;
 use PersistentIdentifiers\Form\ConfigForm;
 use PersistentIdentifiers\Form\EZIDForm;
 use PersistentIdentifiers\Form\DataCiteForm;
+use PersistentIdentifiers\Form\LocalARKForm;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\View\Model\ViewModel;
@@ -38,6 +39,7 @@ class IndexController extends AbstractActionController
         $form = $this->getForm(ConfigForm::class);
         $ezidForm = $this->getForm(EZIDForm::class);
         $dataciteForm = $this->getForm(DataCiteForm::class);
+        $localArkForm = $this->getForm(LocalARKForm::class);
 
         $form->setData([
             // Get/set main settings
@@ -65,9 +67,16 @@ class IndexController extends AbstractActionController
 
         $dataciteForm->setData($dataciteData);
 
+        // Get/set local ARK settings
+        $localArkData['local-ark-configuration']['local_ark_naan'] = $this->settings->get('local_ark_naan');
+        $localArkData['local-ark-configuration']['local_ark_shoulder'] = $this->settings->get('local_ark_shoulder');
+
+        $localArkForm->setData($localArkData);
+
         $view->setVariable('form', $form);
         $view->setVariable('ezidForm', $ezidForm);
         $view->setVariable('dataciteForm', $dataciteForm);
+        $view->setVariable('localArkForm', $localArkForm);
 
         if ($this->getRequest()->isPost()) {
             $form->setData($this->params()->fromPost());
@@ -106,6 +115,16 @@ class IndexController extends AbstractActionController
                 $this->settings->set('datacite_publisher_property', $dataciteFormData['datacite-required-metadata']['datacite_publisher_property']);
                 $this->settings->set('datacite_publicationYear_property', $dataciteFormData['datacite-required-metadata']['datacite_publicationYear_property']);
                 $this->settings->set('datacite_resourceTypeGeneral_property', $dataciteFormData['datacite-required-metadata']['datacite_resourceTypeGeneral_property']);
+            }
+
+            $localArkForm->setData($this->params()->fromPost());
+            if ($localArkForm->isValid()) {
+
+                $localArkFormData = $localArkForm->getData();
+
+                // Set local ARK settings
+                $this->settings->set('local_ark_naan', $localArkFormData['local-ark-configuration']['local_ark_naan']);
+                $this->settings->set('local_ark_shoulder', $localArkFormData['local-ark-configuration']['local_ark_shoulder']);
             }
 
             $this->messenger()->addSuccess('Configuration and password updated');

@@ -1,59 +1,71 @@
 $(document).ready(function () {
     let selectingElement;
-    
+
     ezidRadio = $('input[type="radio"][value="ezid"]');
     dataciteRadio = $('input[type="radio"][value="datacite"]');
-    
+    localArkRadio = $('input[type="radio"][value="localark"]');
+
     // Show or hide config settings by selected PID service
     const show = selector => $('#content').find(selector).removeClass('inactive');
     const hide = selector => $('#content').find(selector).addClass('inactive');
-    
-    if (ezidRadio.prop('checked')) {
-        show('#ezid-configuration');
 
-        // Enable/disable relevant inputs
-        $("input[name^='ezid']").prop("disabled", false);
+    const hideAll = () => {
+        hide('#ezid-configuration');
+        hide('#datacite-configuration');
+        hide('#datacite-required-metadata');
+        hide('#local-ark-configuration');
+        $("input[name^='ezid']").prop("disabled", true);
         $("input[name^='datacite']").prop("disabled", true);
         $("select[name^='datacite']").prop("disabled", true);
         $("select[id^='datacite']").removeAttr('required');
+        $("input[name^='local_ark']").prop("disabled", true);
+    };
+
+    if (ezidRadio.prop('checked')) {
+        hideAll();
+        show('#ezid-configuration');
+        $("input[name^='ezid']").prop("disabled", false);
     }
-    
+
     if (dataciteRadio.prop('checked')) {
+        hideAll();
         show('#datacite-configuration');
         show('#datacite-required-metadata');
-
-        // Enable/disable relevant inputs
         $("input[name^='datacite']").prop("disabled", false);
         $("select[name^='datacite']").prop("disabled", false);
         $("select[id^='datacite']").attr('required', 'required');
-        $("input[name^='ezid']").prop("disabled", true);
     }
-    
+
+    if (localArkRadio.prop('checked')) {
+        hideAll();
+        show('#local-ark-configuration');
+        $("input[name^='local_ark']").prop("disabled", false);
+    }
+
     ezidRadio.change(function() {
         if (this.checked) {
+            hideAll();
             show('#ezid-configuration');
-            hide('#datacite-configuration');
-            hide('#datacite-required-metadata');
-
-            // Enable/disable relevant inputs
             $("input[name^='ezid']").prop("disabled", false);
-            $("input[name^='datacite']").prop("disabled", true);
-            $("select[name^='datacite']").prop("disabled", true);
-            $("select[id^='datacite']").removeAttr('required');
         }
     });
-    
+
     dataciteRadio.change(function() {
         if (this.checked) {
+            hideAll();
             show('#datacite-configuration');
             show('#datacite-required-metadata');
-            hide('#ezid-configuration');
-
-            // Enable/disable relevant inputs
             $("input[name^='datacite']").prop("disabled", false);
             $("select[name^='datacite']").prop("disabled", false);
             $("select[id^='datacite']").attr('required', 'required');
-            $("input[name^='ezid']").prop("disabled", true);
+        }
+    });
+
+    localArkRadio.change(function() {
+        if (this.checked) {
+            hideAll();
+            show('#local-ark-configuration');
+            $("input[name^='local_ark']").prop("disabled", false);
         }
     });
 });
