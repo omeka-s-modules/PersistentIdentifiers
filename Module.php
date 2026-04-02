@@ -34,6 +34,7 @@ class Module extends AbstractModule
         );
         // Allow all visitors to view PID generic item landing page.
         $acl->allow(null, 'PersistentIdentifiers\Controller\Index', 'item-landing-page');
+        $acl->allow(null, 'PersistentIdentifiers\Controller\Index', 'ark-landing-page');
     }
 
     public function install(ServiceLocatorInterface $serviceLocator)

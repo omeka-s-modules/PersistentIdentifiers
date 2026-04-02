@@ -66,6 +66,17 @@ $subjectValues = $item->displaySubjectValues([
 <?php endif; ?>
 <?php $this->trigger('view.show.after'); ?>
 
+<?php elseif (isset($invalidARK)): ?>
+<?php echo $this->pageTitle($translate('Invalid Identifier'), 2); ?>
+<div class="body">
+    <?php echo sprintf(
+        $translate('%1$s does not appear to be a valid ARK identifier.'),
+        sprintf('<strong>%s</strong>', $escape($invalidARK))); ?>
+</div>
+<p>
+    <?php echo $this->hyperlink($translate('Back to Home Page'), $this->url('top', ['action' => 'index'])) ?>
+</p>
+
 <?php elseif (isset($missingID)): ?>
 <?php echo $this->pageTitle('Resource Removed', 2); ?>
 <div class="body">

@@ -81,6 +81,42 @@ class LocalARK implements PIDSelectorInterface
         return;
     }
 
+    // Verify the check character of any NOID-style ARK.
+    // Parses the shoulder by the ARK spec convention (shoulder ends at the first digit
+    // after the NAAN), so this works for EZID ARKs and local ARKs alike.
+    public static function verifyArk(string $ark): bool
+    {
+        // Strip ark:/NAAN/ prefix
+        if (!preg_match('/^ark:\/\d+\/(.+)$/', $ark, $matches)) {
+            return false;
+        }
+        $remainder = $matches[1]; // shoulder + opaque + check
+
+        // Shoulder ends at (and includes) the first digit
+        if (!preg_match('/^\D*\d/', $remainder, $m)) {
+            return false;
+        }
+        $opaqueAndCheck = substr($remainder, strlen($m[0]));
+
+        if (strlen($opaqueAndCheck) < 2) {
+            return false;
+        }
+        $body  = substr($opaqueAndCheck, 0, -1);
+        $check = substr($opaqueAndCheck, -1);
+
+        $alpha = self::ALPHABET;
+        $base  = strlen($alpha);
+        $sum   = 0;
+        for ($i = 0; $i < strlen($body); $i++) {
+            $pos = strpos($alpha, $body[$i]);
+            if ($pos === false) {
+                return false; // character outside betanumeric alphabet
+            }
+            $sum += ($i + 1) * $pos;
+        }
+        return $alpha[$sum % $base] === $check;
+    }
+
     // Generate a random 2-character betanumeric shoulder
     private function randomShoulder(): string
     {

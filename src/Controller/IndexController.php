@@ -5,6 +5,7 @@ use PersistentIdentifiers\Form\ConfigForm;
 use PersistentIdentifiers\Form\EZIDForm;
 use PersistentIdentifiers\Form\DataCiteForm;
 use PersistentIdentifiers\Form\LocalARKForm;
+use PersistentIdentifiers\PIDSelector\LocalARK;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\View\Model\ViewModel;
@@ -163,7 +164,13 @@ class IndexController extends AbstractActionController
         $PIDcontent = $PIDresponse->getContent();
         if (!empty($PIDcontent)) {
             $PIDrecord = $PIDcontent[0];
-            $view->setVariable('pid', $PIDrecord->getPID());
+            $pid = $PIDrecord->getPID();
+            $view->setVariable('pid', $pid);
+            // Verify check digit if the stored PID is an ARK
+            if (strpos($pid, 'ark:/') === 0 && !LocalARK::verifyArk($pid)) {
+                $view->setVariable('invalidARK', $pid);
+                return $view;
+            }
         }
 
         // Display 'tombstone' message if item not found
@@ -177,6 +184,44 @@ class IndexController extends AbstractActionController
         $item = $response->getContent();
         $view->setVariable('item', $item);
 
+        return $view;
+    }
+
+    public function arkLandingPageAction()
+    {
+        $view = new ViewModel;
+        $view->setTemplate('persistent-identifiers/index/item-landing-page');
+
+        $naan       = $this->params('naan');
+        $identifier = $this->params('identifier');
+        $ark        = 'ark:/' . $naan . '/' . $identifier;
+
+        // Verify check digit for ARKs (EZID and Local ARK)
+        if (!LocalARK::verifyArk($ark)) {
+            $view->setVariable('invalidARK', $ark);
+            return $view;
+        }
+
+        // Look up item by stored PID value
+        $PIDresponse = $this->api()->search('pid_items', ['pid' => $ark]);
+        $PIDcontent  = $PIDresponse->getContent();
+        if (empty($PIDcontent)) {
+            $view->setVariable('missingID', $ark);
+            return $view;
+        }
+
+        $itemID = $PIDcontent[0]->item()->id();
+
+        try {
+            $response = $this->api()->read('items', $itemID);
+        } catch (ApiException\NotFoundException $e) {
+            $view->setVariable('pid', $ark);
+            $view->setVariable('missingID', $ark);
+            return $view;
+        }
+
+        $view->setVariable('pid', $ark);
+        $view->setVariable('item', $response->getContent());
         return $view;
     }
 

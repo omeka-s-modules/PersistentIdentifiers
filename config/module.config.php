@@ -109,6 +109,17 @@ return [
                     ],
                 ],
             ],
+            'PIDark' => [
+                'type' => \Laminas\Router\Http\Segment::class,
+                'options' => [
+                    'route' => '/ark\::naan/:identifier',
+                    'defaults' => [
+                        '__NAMESPACE__' => 'PersistentIdentifiers\Controller',
+                        'controller' => 'Index',
+                        'action' => 'ark-landing-page',
+                    ],
+                ],
+            ],
         ],
     ],
     'navigation' => [
