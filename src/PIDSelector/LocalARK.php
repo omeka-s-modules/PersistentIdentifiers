@@ -21,7 +21,7 @@ class LocalARK implements PIDSelectorInterface
     public function __construct(Settings $settings)
     {
         $this->settings = $settings;
-        $this->naan = $this->settings->get('local_ark_naan', '');
+        $this->naan = preg_replace('/\D/', '', $this->settings->get('local_ark_naan', ''));
 
         $shoulder = $this->settings->get('local_ark_shoulder', '');
         if (empty($shoulder)) {

@@ -123,8 +123,12 @@ class IndexController extends AbstractActionController
 
                 $localArkFormData = $localArkForm->getData();
 
-                // Set local ARK settings
-                $this->settings->set('local_ark_naan', $localArkFormData['local-ark-configuration']['local_ark_naan']);
+                // Set local ARK settings, keeping only digits from the NAAN
+                $naan = preg_replace('/\D/', '', $localArkFormData['local-ark-configuration']['local_ark_naan']);
+                $this->settings->set('local_ark_naan', $naan);
+                $localArkForm->get('local-ark-configuration')
+                             ->get('local_ark_naan')
+                             ->setValue($naan);
                 $this->settings->set('local_ark_shoulder', $localArkFormData['local-ark-configuration']['local_ark_shoulder']);
 
                 // If shoulder was left blank, instantiate LocalARK to trigger
