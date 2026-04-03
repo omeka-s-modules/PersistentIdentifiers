@@ -117,12 +117,14 @@ class LocalARK implements PIDSelectorInterface
         return $alpha[$sum % $base] === $check;
     }
 
-    // Generate a random 2-character betanumeric shoulder
+    // Generate a random 2-character shoulder: consonant + digit.
+    // The shoulder must end with a digit so the ARK parser can locate
+    // the boundary between shoulder and opaque string.
     private function randomShoulder(): string
     {
         $alpha = self::ALPHABET;
-        $len = strlen($alpha);
-        return $alpha[random_int(0, $len - 1)] . $alpha[random_int(0, $len - 1)];
+        // Indices 0–9 are digits, 10–28 are consonants
+        return $alpha[random_int(10, strlen($alpha) - 1)] . $alpha[random_int(0, 9)];
     }
 
     // Encode a positive integer as a betanumeric string (base 29)

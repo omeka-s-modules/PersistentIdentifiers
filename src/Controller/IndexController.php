@@ -126,6 +126,16 @@ class IndexController extends AbstractActionController
                 // Set local ARK settings
                 $this->settings->set('local_ark_naan', $localArkFormData['local-ark-configuration']['local_ark_naan']);
                 $this->settings->set('local_ark_shoulder', $localArkFormData['local-ark-configuration']['local_ark_shoulder']);
+
+                // If shoulder was left blank, instantiate LocalARK to trigger
+                // auto-generation and persist it, then show the result in the form
+                if (empty($localArkFormData['local-ark-configuration']['local_ark_shoulder'])) {
+                    $pidSelector = $this->services->get('PersistentIdentifiers\PIDSelectorManager');
+                    $pidSelector->get('localark');
+                    $localArkForm->get('local-ark-configuration')
+                                 ->get('local_ark_shoulder')
+                                 ->setValue($this->settings->get('local_ark_shoulder'));
+                }
             }
 
             $this->messenger()->addSuccess('Configuration and password updated');
