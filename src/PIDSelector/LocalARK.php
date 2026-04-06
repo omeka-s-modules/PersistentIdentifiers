@@ -42,11 +42,7 @@ class LocalARK implements PIDSelectorInterface
             return;
         }
 
-        $counter = (int) $this->settings->get('local_ark_counter', 0);
-        $counter++;
-        $this->settings->set('local_ark_counter', $counter);
-
-        $opaque = $this->encode($counter);
+        $opaque = $this->randomOpaque(6);
         $opaque .= $this->checkChar($opaque);
 
         return 'ark:/' . $this->naan . '/' . $this->shoulder . $opaque;
@@ -127,18 +123,14 @@ class LocalARK implements PIDSelectorInterface
         return $alpha[random_int(10, strlen($alpha) - 1)] . $alpha[random_int(0, 9)];
     }
 
-    // Encode a positive integer as a betanumeric string (base 29)
-    private function encode(int $n): string
+    // Generate a random betanumeric string of the given length
+    private function randomOpaque(int $length): string
     {
         $alpha = self::ALPHABET;
-        $base = strlen($alpha);
-        if ($n === 0) {
-            return $alpha[0];
-        }
+        $max = strlen($alpha) - 1;
         $result = '';
-        while ($n > 0) {
-            $result = $alpha[$n % $base] . $result;
-            $n = intdiv($n, $base);
+        for ($i = 0; $i < $length; $i++) {
+            $result .= $alpha[random_int(0, $max)];
         }
         return $result;
     }
