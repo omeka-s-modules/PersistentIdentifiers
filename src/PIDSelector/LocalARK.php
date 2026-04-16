@@ -82,8 +82,8 @@ class LocalARK implements PIDSelectorInterface
     // after the NAAN), so this works for EZID ARKs and local ARKs alike.
     public static function verifyArk(string $ark): bool
     {
-        // Strip ark:/NAAN/ prefix
-        if (!preg_match('/^ark:\/\d+\/(.+)$/', $ark, $matches)) {
+        // Strip ark:/NAAN/ or ark:NAAN/ prefix (classic and modern forms)
+        if (!preg_match('/^ark:\/?(?:\d+)\/(.+)$/', $ark, $matches)) {
             return false;
         }
         $remainder = $matches[1]; // shoulder + opaque + check

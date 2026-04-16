@@ -112,7 +112,7 @@ return [
             'PIDark' => [
                 'type' => \Laminas\Router\Http\Regex::class,
                 'options' => [
-                    'regex' => '/ark:/(?P<naan>[^/]+)/(?P<identifier>.+)',
+                    'regex' => '/ark:\/?(?P<naan>[^/]+)/(?P<identifier>.+)',
                     'spec' => '/ark:/%naan%/%identifier%',
                     'defaults' => [
                         '__NAMESPACE__' => 'PersistentIdentifiers\Controller',
