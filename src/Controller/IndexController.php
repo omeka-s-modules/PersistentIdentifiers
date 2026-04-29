@@ -242,12 +242,14 @@ class IndexController extends AbstractActionController
     // Mint (create) PID via PID Service API and store in DB
     public function mintPID($pidService, $pidTarget, $itemID)
     {
-        // Get Item Representation to access metadata as needed
-        $response = $this->api()->read('items', $itemID);
-        $itemRepresentation = $response->getContent();
+        $itemRepresentation = null;
+        if ($itemID) {
+            $response = $this->api()->read('items', $itemID);
+            $itemRepresentation = $response->getContent();
+        }
 
         // If PIDs in existing fields, attempt to extract
-        if ($this->settings->get('existing_pid_fields')) {
+        if ($itemRepresentation && $this->settings->get('existing_pid_fields')) {
             $existingFields = $this->settings->get('existing_pid_fields');
             $existingPID = $pidService->extract($existingFields, $itemRepresentation);
             if ($existingPID) {

@@ -1,7 +1,6 @@
 <?php
 namespace PersistentIdentifiers\PIDSelector;
 
-use Doctrine\DBAL\Connection;
 use Omeka\Settings\Settings;
 
 /**
@@ -16,18 +15,16 @@ class LocalARK implements PIDSelectorInterface
     const ALPHABET     = '0123456789bcdfghjkmnpqrstvwxz';
     const OPAQUE_LENGTH = 6;
     const COUNTER_MOD  = 24137569; // 29^6 — full counter space
-    const LCG_A        = 29001;    // a-1 = 29000, divisible by 29 (Hull-Dobell requirement)
+    const LCG_A        = 14918761; // ≈ m/φ, a-1 divisible by 29 (Hull-Dobell), spreads consecutive counters across full range
     const LCG_C        = 1;        // coprime with 29^6
 
     protected $settings;
-    protected $connection;
     protected $naan;
     protected $shoulder;
 
-    public function __construct(Settings $settings, Connection $connection)
+    public function __construct(Settings $settings)
     {
-        $this->settings   = $settings;
-        $this->connection = $connection;
+        $this->settings = $settings;
         $this->naan = preg_replace('/\D/', '', $this->settings->get('local_ark_naan', ''));
 
         if ($this->settings->get('local_ark_counter') === null) {
@@ -53,21 +50,8 @@ class LocalARK implements PIDSelectorInterface
             return;
         }
 
-        $conn = $this->connection;
-        $conn->beginTransaction();
-        try {
-            $counter = (int) $conn->fetchOne(
-                "SELECT value FROM omeka_setting WHERE id = 'local_ark_counter' FOR UPDATE"
-            );
-            $conn->executeStatement(
-                "UPDATE omeka_setting SET value = :val WHERE id = 'local_ark_counter'",
-                ['val' => $counter + 1]
-            );
-            $conn->commit();
-        } catch (\Exception $e) {
-            $conn->rollBack();
-            throw $e;
-        }
+        $counter = (int) $this->settings->get('local_ark_counter', 0);
+        $this->settings->set('local_ark_counter', $counter + 1);
 
         $scrambled = (self::LCG_A * $counter + self::LCG_C) % self::COUNTER_MOD;
         $opaque    = $this->encodeBase29($scrambled, self::OPAQUE_LENGTH);

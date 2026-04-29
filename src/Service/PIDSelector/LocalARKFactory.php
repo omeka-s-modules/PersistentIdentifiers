@@ -9,8 +9,7 @@ class LocalARKFactory implements FactoryInterface
 {
     public function __invoke(ContainerInterface $services, $requestedName, array $options = null)
     {
-        $settings   = $services->get('Omeka\Settings');
-        $connection = $services->get('Omeka\Connection');
-        return new LocalARK($settings, $connection);
+        $settings = $services->get('Omeka\Settings');
+        return new LocalARK($settings);
     }
 }
