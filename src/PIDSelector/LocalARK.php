@@ -30,9 +30,9 @@ class LocalARK implements PIDSelectorInterface
         $this->connection = $connection;
         $this->naan = preg_replace('/\D/', '', $this->settings->get('local_ark_naan', ''));
 
-        $connection->executeStatement(
-            "INSERT IGNORE INTO omeka_setting (id, value) VALUES ('local_ark_counter', '0')"
-        );
+        if ($this->settings->get('local_ark_counter') === null) {
+            $this->settings->set('local_ark_counter', 0);
+        }
 
         $shoulder = $this->settings->get('local_ark_shoulder', '');
         if (empty($shoulder)) {
