@@ -1,6 +1,7 @@
 <?php
 namespace PersistentIdentifiers\PIDSelector;
 
+use Doctrine\DBAL\Connection;
 use Omeka\Settings\Settings;
 
 /**
@@ -12,16 +13,26 @@ use Omeka\Settings\Settings;
 class LocalARK implements PIDSelectorInterface
 {
     // Betanumeric alphabet: digits + consonants, no vowels, no l (29 characters)
-    const ALPHABET = '0123456789bcdfghjkmnpqrstvwxz';
+    const ALPHABET     = '0123456789bcdfghjkmnpqrstvwxz';
+    const OPAQUE_LENGTH = 6;
+    const COUNTER_MOD  = 24137569; // 29^6 — full counter space
+    const LCG_A        = 29001;    // a-1 = 29000, divisible by 29 (Hull-Dobell requirement)
+    const LCG_C        = 1;        // coprime with 29^6
 
     protected $settings;
+    protected $connection;
     protected $naan;
     protected $shoulder;
 
-    public function __construct(Settings $settings)
+    public function __construct(Settings $settings, Connection $connection)
     {
-        $this->settings = $settings;
+        $this->settings   = $settings;
+        $this->connection = $connection;
         $this->naan = preg_replace('/\D/', '', $this->settings->get('local_ark_naan', ''));
+
+        $connection->executeStatement(
+            "INSERT IGNORE INTO omeka_setting (id, value) VALUES ('local_ark_counter', '0')"
+        );
 
         $shoulder = $this->settings->get('local_ark_shoulder', '');
         if (empty($shoulder)) {
@@ -42,8 +53,25 @@ class LocalARK implements PIDSelectorInterface
             return;
         }
 
-        $opaque = $this->randomOpaque(6);
-        $opaque .= $this->checkChar($opaque);
+        $conn = $this->connection;
+        $conn->beginTransaction();
+        try {
+            $counter = (int) $conn->fetchOne(
+                "SELECT value FROM omeka_setting WHERE id = 'local_ark_counter' FOR UPDATE"
+            );
+            $conn->executeStatement(
+                "UPDATE omeka_setting SET value = :val WHERE id = 'local_ark_counter'",
+                ['val' => $counter + 1]
+            );
+            $conn->commit();
+        } catch (\Exception $e) {
+            $conn->rollBack();
+            throw $e;
+        }
+
+        $scrambled = (self::LCG_A * $counter + self::LCG_C) % self::COUNTER_MOD;
+        $opaque    = $this->encodeBase29($scrambled, self::OPAQUE_LENGTH);
+        $opaque   .= $this->checkChar($opaque);
 
         return 'ark:/' . $this->naan . '/' . $this->shoulder . $opaque;
     }
@@ -123,14 +151,14 @@ class LocalARK implements PIDSelectorInterface
         return $alpha[random_int(10, strlen($alpha) - 1)] . $alpha[random_int(0, 9)];
     }
 
-    // Generate a random betanumeric string of the given length
-    private function randomOpaque(int $length): string
+    private function encodeBase29(int $value, int $length): string
     {
-        $alpha = self::ALPHABET;
-        $max = strlen($alpha) - 1;
+        $alpha  = self::ALPHABET;
+        $base   = strlen($alpha);
         $result = '';
         for ($i = 0; $i < $length; $i++) {
-            $result .= $alpha[random_int(0, $max)];
+            $result = $alpha[$value % $base] . $result;
+            $value  = intdiv($value, $base);
         }
         return $result;
     }
