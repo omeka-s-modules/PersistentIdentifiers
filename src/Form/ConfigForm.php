@@ -43,7 +43,7 @@ class ConfigForm extends Form
             'type' => 'text',
             'options' => [
                 'label' => 'Fields with existing PIDs', // @translate
-                'info' => 'List of fields (such as dc.identifier), separated by commas, that may contain existing PID values. If found during import or PID mint, existing PID will be assigned to item.', // @translate
+                'info' => 'List of Omeka S property terms (e.g. dcterms:identifier), separated by commas, that may contain existing PID values. If found during import or PID mint, existing PID will be assigned to item.', // @translate
             ],
             'attributes' => [
                 'id' => 'assign-existing',

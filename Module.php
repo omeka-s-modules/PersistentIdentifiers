@@ -90,13 +90,13 @@ class Module extends AbstractModule
                             ],
                         ]);
                 $pid = $view->form->get('o:pid[o:id]');
-                // Disable checkbox and automatically assign PID if specified in settings
-                if ($view->setting('pid_assign_all')) {
-                    $pid->setAttribute('value', true);
-                    $pid->setAttribute('disabled', true);
-                }
                 // Pass item resource to PID form for PID target
                 $pid->setValue($view->resource);
+                // Check and disable checkbox when pid_assign_all is on
+                if ($view->setting('pid_assign_all')) {
+                    $pid->setAttribute('checked', true);
+                    $pid->setAttribute('disabled', true);
+                }
                 echo $view->formRow($pid);
             }
         );
@@ -113,16 +113,23 @@ class Module extends AbstractModule
                 $adapter = $event->getTarget();
                 $itemRepresentation = $adapter->getRepresentation($addObject);
 
-                // If PID element and pid_assign_all unchecked, only attempt extraction (no new minting)
-                $extractOnly = (empty($requestContent['o:pid']['o:id']) && empty($settings->get('pid_assign_all'))) ? true : false;
-
-                // If PID element or pid_assign_all checked,
-                // mint/update and store PID
-                if ((!empty($requestContent['o:pid']['o:id'])
-                    || !empty($settings->get('pid_assign_all')))
-                    && $adapter->getResourceName() == 'items') {
-                        $this->mintPID($itemRepresentation, $extractOnly);
+                if ($adapter->getResourceName() !== 'items') {
+                    return;
                 }
+
+                $pidChecked  = !empty($requestContent['o:pid']['o:id']);
+                $assignAll   = !empty($settings->get('pid_assign_all'));
+                $hasExistingFields = !empty($settings->get('existing_pid_fields'));
+
+                // Skip if pid_assign_all unchecked and no existing PID fields set
+                if (!$pidChecked && !$assignAll && !$hasExistingFields) {
+                    return;
+                }
+
+                // Extract existing PIDs but don't mint new ones if pid_assign_all unchecked
+                $extractOnly = (!$pidChecked && !$assignAll);
+
+                $this->mintPID($itemRepresentation, $extractOnly);
             }
         );
 
@@ -262,8 +269,8 @@ class Module extends AbstractModule
                 // If no existing PID found and PID element checked, mint new PID
                 $addPID = $pidService->mint($pidTarget, $itemRepresentation);
             }
-        } else {
-            // Mint new PID
+        } elseif (empty($extractOnly)) {
+            // Mint new PID (skip if we were only asked to extract)
             $addPID = $pidService->mint($pidTarget, $itemRepresentation);
         }
 

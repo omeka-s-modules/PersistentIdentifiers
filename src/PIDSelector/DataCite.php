@@ -195,14 +195,19 @@ class DataCite implements PIDSelectorInterface
     {
         foreach (explode(',', $existingFields) as $field) {
             $field = trim($field);
-            // Match input PID fields to existing resource metadata fields
+            // Normalise dot notation (e.g. 'dc.identifier') to Omeka S term notation
+            // (e.g. 'dc:identifier'). Values() keys are always '{prefix}:{localName}'.
+            if (strpos($field, ':') === false && strpos($field, '.') !== false) {
+                $field = preg_replace('/\./', ':', $field, 1);
+            }
             if (array_key_exists($field, $itemRepresentation->values())) {
                 $values = $itemRepresentation->value($field, ['all' => true]);
                 foreach ($values as $value) {
-                    // Find PID values by checking for institution's EZID shoulder within value
-                    // Return first match
-                    if (strpos($value, $this->pidPrefix) !== false) {
-                        return trim($value);
+                    // Check both the text value (literal) and URI field,
+                    // since PIDs may be stored as either value type.
+                    $candidate = (string) $value ?: (string) $value->uri();
+                    if (strpos($candidate, $this->pidPrefix) !== false) {
+                        return trim($candidate);
                     }
                 }
             }

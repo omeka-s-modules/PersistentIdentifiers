@@ -74,14 +74,22 @@ class LocalARK implements PIDSelectorInterface
 
     public function extract($existingFields, $itemRepresentation)
     {
-        $prefix = 'ark:/' . $this->naan . '/';
+        $naanPattern = '/ark:\/?' . preg_quote($this->naan, '/') . '\//';
         foreach (explode(',', $existingFields) as $field) {
             $field = trim($field);
+            // Normalise dot notation (e.g. 'dc.identifier') to Omeka S term notation
+            // (e.g. 'dc:identifier'). Values() keys are always '{prefix}:{localName}'.
+            if (strpos($field, ':') === false && strpos($field, '.') !== false) {
+                $field = preg_replace('/\./', ':', $field, 1);
+            }
             if (array_key_exists($field, $itemRepresentation->values())) {
                 $values = $itemRepresentation->value($field, ['all' => true]);
                 foreach ($values as $value) {
-                    if (strpos((string) $value, $prefix) !== false) {
-                        return trim((string) $value);
+                    // Check both the text value (literal) and URI field,
+                    // since ARKs may be stored as either value type.
+                    $candidate = (string) $value ?: (string) $value->uri();
+                    if (preg_match($naanPattern, $candidate)) {
+                        return trim($candidate);
                     }
                 }
             }
