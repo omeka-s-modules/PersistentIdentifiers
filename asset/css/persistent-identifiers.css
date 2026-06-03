@@ -24,3 +24,7 @@
 .pid-configuration.inactive {
     display: none;
 }
+
+fieldset:has(> .pid-configuration.inactive) {
+    margin-bottom: 0;
+}
