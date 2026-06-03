@@ -18,7 +18,7 @@ $(document).ready(function () {
         $("input[name^='datacite']").prop("disabled", true);
         $("select[name^='datacite']").prop("disabled", true);
         $("select[id^='datacite']").removeAttr('required');
-        $("input[name^='local_ark']").prop("disabled", true);
+        $("input[name^='local-ark']").prop("disabled", true);
     };
 
     if (ezidRadio.prop('checked')) {
@@ -39,7 +39,7 @@ $(document).ready(function () {
     if (localArkRadio.prop('checked')) {
         hideAll();
         show('#local-ark-configuration');
-        $("input[name^='local_ark']").prop("disabled", false);
+        $("input[name^='local-ark']").prop("disabled", false);
     }
 
     ezidRadio.change(function() {
@@ -65,7 +65,7 @@ $(document).ready(function () {
         if (this.checked) {
             hideAll();
             show('#local-ark-configuration');
-            $("input[name^='local_ark']").prop("disabled", false);
+            $("input[name^='local-ark']").prop("disabled", false);
         }
     });
 });
