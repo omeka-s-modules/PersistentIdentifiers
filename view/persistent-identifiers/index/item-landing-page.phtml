@@ -11,13 +11,13 @@ $lang = $this->lang();
 <?php echo $this->pageTitle($item->displayTitle(null, ($filterLocale ? $lang : null)), 2); ?>
 <h2><?php echo $translate('Item'); ?></h2>
 <?php $this->trigger('view.show.before'); ?>
-<?php if ($item->sites()): ?>
-<h2><?php echo $translate('Sites'); ?></h2>
-<div class="pid-site-list">
-    <?php foreach ($item->sites() as $site): ?>
-        <div class="site">
-            <?php echo $this->hyperlink($site->title(), $item->siteUrl($site->slug()), ['class' => 'site-link']); ?>
-        </div>
+<?php
+$itemMedia = $item->media();
+if ($itemMedia):
+?>
+<div class="media-embeds">
+    <?php foreach ($itemMedia as $media): ?>
+        <div class="media-render"><?php echo $media->render(); ?></div>
     <?php endforeach; ?>
 </div>
 <?php endif; ?>
@@ -40,14 +40,26 @@ if (count($itemSets) > 0):
     <?php endforeach; ?>
 </div>
 <?php endif; ?>
-<?php
-$itemMedia = $item->media();
-if ($itemMedia):
-?>
+<?php if ($item->sites()): ?>
+<h2><?php echo $translate('Sites'); ?></h2>
+<div class="pid-site-list">
+    <?php foreach ($item->sites() as $site): ?>
+        <div class="site">
+            <?php echo $this->hyperlink($site->title(), $item->siteUrl($site->slug()), ['class' => 'site-link']); ?>
+        </div>
+    <?php endforeach; ?>
+</div>
+<?php endif; ?>
+<?php if ($itemMedia): ?>
 <h2><?php echo $translate('Media'); ?></h2>
 <div class="media-list">
     <?php foreach ($itemMedia as $media): ?>
-        <?php echo $media->linkPretty(); ?>
+    <div class="value">
+        <a href="<?php echo $escape($media->originalUrl()); ?>" class="resource-link">
+            <?php echo $this->thumbnail($media, 'square'); ?>
+            <span class="resource-name"><?php echo $escape($media->displayTitle()); ?></span>
+        </a>
+    </div>
     <?php endforeach; ?>
 </div>
 <?php endif; ?>
