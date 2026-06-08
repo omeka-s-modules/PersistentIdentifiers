@@ -7,7 +7,7 @@ use Interop\Container\ContainerInterface;
 
 class EZIDFormFactory implements FactoryInterface
 {
-    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
+    public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null)
     {
         $form = new EZIDForm;
         return $form;

@@ -48,7 +48,7 @@ class EZIDForm extends Form
                 'required' => true,
             ],
         ]);
-        
+
         $ezidFieldset->add([
             'name' => 'ezid_password',
             'type' => 'password',

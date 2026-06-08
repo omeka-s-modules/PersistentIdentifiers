@@ -17,7 +17,7 @@ class FormPIDEditor extends AbstractHelper
         $resource = $element->getValue();
         return $view->partial('persistent-identifiers/common/pid-edit-form', [
             'itemID' => $resource->id(),
-            'itemAPIURL' => $resource->apiUrl()
+            'itemAPIURL' => $resource->apiUrl(),
         ]);
     }
 }

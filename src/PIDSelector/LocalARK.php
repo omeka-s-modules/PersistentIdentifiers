@@ -12,11 +12,11 @@ use Omeka\Settings\Settings;
 class LocalARK implements PIDSelectorInterface
 {
     // Betanumeric alphabet: digits + consonants, no vowels, no l (29 characters)
-    const ALPHABET     = '0123456789bcdfghjkmnpqrstvwxz';
+    const ALPHABET = '0123456789bcdfghjkmnpqrstvwxz';
     const OPAQUE_LENGTH = 6;
-    const COUNTER_MOD  = 24137569; // 29^6 — full counter space
-    const LCG_A        = 14918761; // ≈ m/φ, a-1 divisible by 29 (Hull-Dobell), spreads consecutive counters across full range
-    const LCG_C        = 1;        // coprime with 29^6
+    const COUNTER_MOD = 24137569; // 29^6 — full counter space
+    const LCG_A = 14918761; // ≈ m/φ, a-1 divisible by 29 (Hull-Dobell), spreads consecutive counters across full range
+    const LCG_C = 1;        // coprime with 29^6
 
     protected $settings;
     protected $naan;
@@ -54,8 +54,8 @@ class LocalARK implements PIDSelectorInterface
         $this->settings->set('local_ark_counter', $counter + 1);
 
         $scrambled = (self::LCG_A * $counter + self::LCG_C) % self::COUNTER_MOD;
-        $opaque    = $this->encodeBase29($scrambled, self::OPAQUE_LENGTH);
-        $opaque   .= $this->checkChar($opaque);
+        $opaque = $this->encodeBase29($scrambled, self::OPAQUE_LENGTH);
+        $opaque .= $this->checkChar($opaque);
 
         return 'ark:/' . $this->naan . '/' . $this->shoulder . $opaque;
     }
@@ -117,12 +117,12 @@ class LocalARK implements PIDSelectorInterface
         if (strlen($opaqueAndCheck) < 2) {
             return false;
         }
-        $body  = substr($opaqueAndCheck, 0, -1);
+        $body = substr($opaqueAndCheck, 0, -1);
         $check = substr($opaqueAndCheck, -1);
 
         $alpha = self::ALPHABET;
-        $base  = strlen($alpha);
-        $sum   = 0;
+        $base = strlen($alpha);
+        $sum = 0;
         for ($i = 0; $i < strlen($body); $i++) {
             $pos = strpos($alpha, $body[$i]);
             if ($pos === false) {
@@ -145,12 +145,12 @@ class LocalARK implements PIDSelectorInterface
 
     private function encodeBase29(int $value, int $length): string
     {
-        $alpha  = self::ALPHABET;
-        $base   = strlen($alpha);
+        $alpha = self::ALPHABET;
+        $base = strlen($alpha);
         $result = '';
         for ($i = 0; $i < $length; $i++) {
             $result = $alpha[$value % $base] . $result;
-            $value  = intdiv($value, $base);
+            $value = intdiv($value, $base);
         }
         return $result;
     }

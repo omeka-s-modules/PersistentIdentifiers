@@ -23,7 +23,7 @@ class PIDItemRepresentation extends AbstractEntityRepresentation
         return $this->getAdapter('items')
             ->getRepresentation($this->resource->getItem());
     }
-    
+
     public function getPID()
     {
         return $this->resource->getPID();

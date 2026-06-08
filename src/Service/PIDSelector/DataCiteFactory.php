@@ -7,7 +7,7 @@ use Interop\Container\ContainerInterface;
 
 class DataCiteFactory implements FactoryInterface
 {
-    public function __invoke(ContainerInterface $services, $requestedName, array $options = null)
+    public function __invoke(ContainerInterface $services, $requestedName, ?array $options = null)
     {
         $settings = $services->get('Omeka\Settings');
         $client = $services->get('Omeka\HttpClient');

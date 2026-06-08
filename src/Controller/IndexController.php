@@ -19,12 +19,12 @@ class IndexController extends AbstractActionController
      * @var Settings
      */
     protected $settings;
-    
+
     /**
      * @var ServiceLocatorInterface
      */
     protected $services;
-    
+
     protected $api;
 
     public function __construct(Settings $settings, ServiceLocatorInterface $services)
@@ -33,7 +33,7 @@ class IndexController extends AbstractActionController
         $this->services = $services;
         $this->api = $this->services->get('Omeka\ApiManager');
     }
-    
+
     public function indexAction()
     {
         $view = new ViewModel;
@@ -48,7 +48,7 @@ class IndexController extends AbstractActionController
             'pid_assign_all' => $this->settings->get('pid_assign_all'),
             'existing_pid_fields' => $this->settings->get('existing_pid_fields'),
         ]);
-        
+
         // Get/set ezid settings
         $ezidData['ezid-configuration']['ezid_shoulder'] = $this->settings->get('ezid_shoulder');
         $ezidData['ezid-configuration']['ezid_username'] = $this->settings->get('ezid_username');
@@ -150,15 +150,15 @@ class IndexController extends AbstractActionController
 
     // Mint and/or remove PID (called via Ajax from pid-form)
     public function pidEditAction()
-    {        
+    {
         $response = $this->getResponse();
-        $target = isset($_POST['target']) ? $_POST['target'] : null;
-        $itemID = isset($_POST['itemID']) ? $_POST['itemID'] : null;
+        $target = $_POST['target'] ?? null;
+        $itemID = $_POST['itemID'] ?? null;
 
         $pidSelector = $this->services->get('PersistentIdentifiers\PIDSelectorManager');
         $pidSelectedService = $this->settings->get('pid_service');
         $pidService = $pidSelector->get($pidSelectedService);
-        
+
         if (isset($_POST['toRemovePID'])) {
             $deletedPID = $this->removePID($pidService, $_POST['toRemovePID'], $itemID);
             return $response->setContent($deletedPID);
@@ -206,9 +206,9 @@ class IndexController extends AbstractActionController
         $view = new ViewModel;
         $view->setTemplate('persistent-identifiers/index/item-landing-page');
 
-        $naan       = $this->params('naan');
+        $naan = $this->params('naan');
         $identifier = $this->params('identifier');
-        $ark        = 'ark:/' . $naan . '/' . $identifier;
+        $ark = 'ark:/' . $naan . '/' . $identifier;
 
         // Verify check digit for ARKs (EZID and Local ARK)
         if (!LocalARK::verifyArk($ark)) {
@@ -218,7 +218,7 @@ class IndexController extends AbstractActionController
 
         // Look up item by stored PID value
         $PIDresponse = $this->api()->search('pid_items', ['pid' => $ark]);
-        $PIDcontent  = $PIDresponse->getContent();
+        $PIDcontent = $PIDresponse->getContent();
         if (empty($PIDcontent)) {
             $view->setVariable('missingID', $ark);
             return $view;
@@ -255,7 +255,7 @@ class IndexController extends AbstractActionController
             if ($existingPID) {
                 // Attempt to update PID service with Omeka resource URI
                 $addPID = $pidService->update($existingPID, $pidTarget, $itemRepresentation);
-            } else if (empty($extractOnly)) {
+            } elseif (empty($extractOnly)) {
                 // If no existing PID found and PID element checked, mint new PID
                 $addPID = $pidService->mint($pidTarget, $itemRepresentation);
             }

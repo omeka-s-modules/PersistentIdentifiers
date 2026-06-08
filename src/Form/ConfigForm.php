@@ -2,11 +2,9 @@
 namespace PersistentIdentifiers\Form;
 
 use Laminas\Form\Form;
-use Omeka\Settings\Settings;
 
 class ConfigForm extends Form
 {
-
     public function init()
     {
         $this->add([
@@ -25,7 +23,7 @@ class ConfigForm extends Form
                 'required' => true,
             ],
         ]);
-        
+
         $this->add([
             'name' => 'pid_assign_all',
             'type' => 'checkbox',

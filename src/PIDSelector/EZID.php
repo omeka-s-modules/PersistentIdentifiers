@@ -20,14 +20,15 @@ class EZID implements PIDSelectorInterface
      */
     protected $client;
 
-    public function __construct(Settings $settings, HttpClient $client) {
+    public function __construct(Settings $settings, HttpClient $client)
+    {
         $this->settings = $settings;
         $this->pidUsername = $this->settings->get('ezid_username');
         $this->pidPassword = $this->settings->get('ezid_password');
         $this->pidShoulder = $this->settings->get('ezid_shoulder');
         $this->client = $client;
     }
-    
+
     public function getLabel()
     {
         return 'EZID'; // @translate
@@ -88,7 +89,7 @@ class EZID implements PIDSelectorInterface
         $shoulder = 'https://ezid.cdlib.org/id/' . $pidToDelete;
         // Set EZID required prefix with empty value
         $target = '_target:';
-        
+
         // Remove target via PID API
         // EZIDs cannot be deleted, only metadata (i.e. target) can be removed
         $request = $this->client

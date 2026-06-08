@@ -27,7 +27,7 @@ class PIDListener extends AbstractListenerAggregate
             ['name' => 'PIDitem']
         );
         $response = $event->getResponse();
-        
+
         // Set Location in headers and use HTTP 302 to trigger redirect
         $response->getHeaders()->addHeaderLine('Location', $url);
         $response->setStatusCode(302);

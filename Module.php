@@ -4,14 +4,10 @@ namespace PersistentIdentifiers;
 use Omeka\Module\AbstractModule;
 use Omeka\Entity\Item;
 use Laminas\ServiceManager\ServiceLocatorInterface;
-use Laminas\View\Renderer\PhpRenderer;
-use Laminas\Mvc\Controller\AbstractController;
 use Laminas\EventManager\SharedEventManagerInterface;
-use Laminas\Form\Fieldset;
 use PersistentIdentifiers\Form\Element as ModuleElement;
 use Laminas\Mvc\MvcEvent;
 use Laminas\EventManager\Event;
-use PersistentIdentifiers\Form\ConfigForm;
 
 class Module extends AbstractModule
 {
@@ -29,7 +25,7 @@ class Module extends AbstractModule
         $acl->allow(
             null,
             ['PersistentIdentifiers\Api\Adapter\PIDItemAdapter',
-             'PersistentIdentifiers\Entity\PidItem',
+                'PersistentIdentifiers\Entity\PidItem',
             ]
         );
         // Allow all visitors to view PID generic item landing page.
@@ -43,7 +39,7 @@ class Module extends AbstractModule
         $connection->exec('CREATE TABLE pid_item (id INT AUTO_INCREMENT NOT NULL, item_id INT NOT NULL, pid VARCHAR(255) NOT NULL, UNIQUE INDEX UNIQ_C025A89B126F525E (item_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB;');
         $connection->exec('ALTER TABLE pid_item ADD CONSTRAINT FK_C025A89B126F525E FOREIGN KEY (item_id) REFERENCES item (id) ON DELETE CASCADE;');
     }
-    
+
     public function uninstall(ServiceLocatorInterface $serviceLocator)
     {
         $connection = $serviceLocator->get('Omeka\Connection');
@@ -53,7 +49,7 @@ class Module extends AbstractModule
 
     public function attachListeners(SharedEventManagerInterface $sharedEventManager)
     {
-        
+
         // Add PID element to item edit form
         $sharedEventManager->attach(
             'Omeka\Controller\Admin\Item',
@@ -61,13 +57,13 @@ class Module extends AbstractModule
             function (Event $event) {
                 $view = $event->getTarget();
                 $view->form->add([
-                            'name' => 'o:pid[o:id]',
-                            'type' => ModuleElement\PIDEditor::class,
-                            'options' => [
-                                'label' => 'Persistent Identifier', // @translate
-                                'info' => 'Mint & assign PID from chosen service. (Note: PID is immediately assigned to item)', // @translate
-                            ],
-                        ]);
+                    'name' => 'o:pid[o:id]',
+                    'type' => ModuleElement\PIDEditor::class,
+                    'options' => [
+                        'label' => 'Persistent Identifier', // @translate
+                        'info' => 'Mint & assign PID from chosen service. (Note: PID is immediately assigned to item)', // @translate
+                    ],
+                ]);
                 $pid = $view->form->get('o:pid[o:id]');
                 // Pass item resource to PID form for PID target
                 $pid->setValue($view->resource);
@@ -82,13 +78,13 @@ class Module extends AbstractModule
             function (Event $event) {
                 $view = $event->getTarget();
                 $view->form->add([
-                            'name' => 'o:pid[o:id]',
-                            'type' => 'checkbox',
-                            'options' => [
-                                'label' => 'Assign Persistent Identifier', // @translate
-                                'info' => 'Mint & assign PID from chosen service.', // @translate
-                            ],
-                        ]);
+                    'name' => 'o:pid[o:id]',
+                    'type' => 'checkbox',
+                    'options' => [
+                        'label' => 'Assign Persistent Identifier', // @translate
+                        'info' => 'Mint & assign PID from chosen service.', // @translate
+                    ],
+                ]);
                 $pid = $view->form->get('o:pid[o:id]');
                 // Pass item resource to PID form for PID target
                 $pid->setValue($view->resource);
@@ -117,8 +113,8 @@ class Module extends AbstractModule
                     return;
                 }
 
-                $pidChecked  = !empty($requestContent['o:pid']['o:id']);
-                $assignAll   = !empty($settings->get('pid_assign_all'));
+                $pidChecked = !empty($requestContent['o:pid']['o:id']);
+                $assignAll = !empty($settings->get('pid_assign_all'));
                 $hasExistingFields = !empty($settings->get('existing_pid_fields'));
 
                 // Skip if pid_assign_all unchecked and no existing PID fields set
@@ -164,21 +160,21 @@ class Module extends AbstractModule
                     return;
                 }
                 $form->add([
-                            'name' => 'batch_pid_action',
-                            'type' => 'radio',
-                            'options' => [
-                                'label' => 'Persistent Identifiers', // @translate
-                                'info' => 'Mint & assign PID to any item that does not already have one, or remove any existing PIDs.', // @translate
-                                'value_options' => [
-                                    'mint' => 'Mint PIDs', // @translate
-                                    'remove' => 'Remove PIDs', // @translate
-                                    '' => '[No action]', // @translate
-                                ],
-                            ],
-                            'attributes' => [
-                                'value' => '',
-                            ],
-                        ]);
+                    'name' => 'batch_pid_action',
+                    'type' => 'radio',
+                    'options' => [
+                        'label' => 'Persistent Identifiers', // @translate
+                        'info' => 'Mint & assign PID to any item that does not already have one, or remove any existing PIDs.', // @translate
+                        'value_options' => [
+                            'mint' => 'Mint PIDs', // @translate
+                            'remove' => 'Remove PIDs', // @translate
+                            '' => '[No action]', // @translate
+                        ],
+                    ],
+                    'attributes' => [
+                        'value' => '',
+                    ],
+                ]);
             }
         );
 
@@ -212,7 +208,7 @@ class Module extends AbstractModule
                 $event->setParam('data', $data);
             }
         );
-        
+
         // After hydrating, mint or delete PID for item according to 'batch_pid_action'.
         // When minting, skip items with existing PID. When deleting, skip items with no PID.
         $sharedEventManager->attach(
@@ -221,7 +217,7 @@ class Module extends AbstractModule
             function (Event $event) {
                 $item = $event->getParam('entity');
                 $data = $event->getParam('request')->getContent();
-                $action = isset($data['batch_pid_action']) ? $data['batch_pid_action'] : '';
+                $action = $data['batch_pid_action'] ?? '';
                 $adapter = $event->getTarget();
                 $itemRepresentation = $adapter->getRepresentation($item);
 
@@ -265,7 +261,7 @@ class Module extends AbstractModule
             if ($existingPID) {
                 // Attempt to update PID service with Omeka resource URI
                 $addPID = $pidService->update($existingPID, $pidTarget, $itemRepresentation);
-            } else if (empty($extractOnly)) {
+            } elseif (empty($extractOnly)) {
                 // If no existing PID found and PID element checked, mint new PID
                 $addPID = $pidService->mint($pidTarget, $itemRepresentation);
             }

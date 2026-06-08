@@ -20,7 +20,8 @@ class DataCite implements PIDSelectorInterface
      */
     protected $client;
 
-    public function __construct(Settings $settings, HttpClient $client) {
+    public function __construct(Settings $settings, HttpClient $client)
+    {
         $this->settings = $settings;
         $this->pidPrefix = $this->settings->get('datacite_prefix');
         $this->pidUsername = $this->settings->get('datacite_username');
@@ -32,7 +33,7 @@ class DataCite implements PIDSelectorInterface
         $this->pidResourceType = $this->settings->get('datacite_resourceTypeGeneral_property');
         $this->client = $client;
     }
-    
+
     public function getLabel()
     {
         return 'DataCite'; // @translate
@@ -75,7 +76,7 @@ class DataCite implements PIDSelectorInterface
                     'types' => [
                         'resourceTypeGeneral' => $type,
                     ],
-                    'url' => $targetURI
+                    'url' => $targetURI,
                 ],
             ],
         ];
@@ -134,7 +135,7 @@ class DataCite implements PIDSelectorInterface
                     'types' => [
                         'resourceTypeGeneral' => $type,
                     ],
-                    'url' => $targetURI
+                    'url' => $targetURI,
                 ],
             ],
         ];
@@ -168,7 +169,7 @@ class DataCite implements PIDSelectorInterface
             'data' => [
                 'attributes' => [
                     'event' => 'hide',
-                    'url' => 'https://www.datacite.org/invalid.html'
+                    'url' => 'https://www.datacite.org/invalid.html',
                 ],
             ],
         ];

@@ -14,7 +14,7 @@ interface PIDSelectorInterface
      * @return string
      */
     public function getLabel();
-    
+
     /**
      * Process a single PID mint (create) request.
      *
@@ -23,7 +23,7 @@ interface PIDSelectorInterface
      * @return string
      */
     public function mint($targetURI, $itemRepresentation);
-    
+
     /**
      * Process a single PID update request.
      *

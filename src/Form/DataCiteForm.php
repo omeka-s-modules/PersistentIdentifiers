@@ -5,7 +5,6 @@ use Laminas\Form\Form;
 use Omeka\Form\Element\PropertySelect;
 use Omeka\Settings\Settings;
 use Laminas\EventManager\EventManagerAwareTrait;
-use Laminas\EventManager\Event;
 
 class DataCiteForm extends Form
 {
