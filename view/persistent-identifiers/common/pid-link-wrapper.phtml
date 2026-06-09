@@ -1,0 +1,52 @@
+<?php
+// Link resources with a PID to their own landing page; otherwise link to first site found; otherwise leave as-is
+$pidResourceUrl = function ($vr) {
+    if ($vr->resourceName() === 'items') {
+        $pidResults = $this->api()->search('pid_items', ['item_id' => $vr->id()])->getContent();
+        if (!empty($pidResults)) {
+            $pid = $pidResults[0]->getPID();
+            if (strpos($pid, 'ark:/') === 0) {
+                $arkPart = substr($pid, 5);
+                $slash = strpos($arkPart, '/');
+                return $this->url('PIDark', [
+                    'naan' => substr($arkPart, 0, $slash),
+                    'identifier' => substr($arkPart, $slash + 1),
+                ]);
+            }
+            return $this->url('PIDitem', ['id' => $vr->id()]);
+        }
+    }
+    $sites = method_exists($vr, 'sites') ? $vr->sites() : $vr->item()->sites();
+    if (!empty($sites)) {
+        return $vr->siteUrl(array_values($sites)[0]->slug());
+    }
+    return null;
+};
+
+$urls = [];
+if (isset($values)) {
+    foreach ($values as $propertyData) {
+        foreach ($propertyData['values'] as $value) {
+            if ($value->valueResource()) {
+                $urls[] = $pidResourceUrl($value->valueResource());
+            }
+        }
+    }
+    $coreName = 'common/resource-values';
+} else {
+    foreach ($subjectValues as $propValues) {
+        foreach ($propValues as $value) {
+            $urls[] = $pidResourceUrl($value['val']->resource());
+        }
+    }
+    $coreName = 'common/linked-resources';
+}
+
+$i = 0;
+echo preg_replace_callback(
+    '/<a\b[^>]*\bhref=""/',
+    function ($m) use ($urls, &$i) {
+        return str_replace('href=""', 'href="' . htmlspecialchars($urls[$i++] ?? '', ENT_QUOTES) . '"', $m[0]);
+    },
+    $this->partial($coreName, get_defined_vars())
+);

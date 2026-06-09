@@ -22,7 +22,7 @@ if ($itemMedia):
 </div>
 <?php endif; ?>
 <h2><?php echo $translate('Metadata'); ?></h2>
-<?php echo $item->displayValues(); ?>
+<?php echo $item->displayValues(['viewName' => 'persistent-identifiers/common/pid-link-wrapper']); ?>
 <?php if (isset($pid)): ?>
 <h2><?php echo $translate('Persistent Identifier'); ?></h2>
 <div class="pid">
@@ -36,7 +36,15 @@ if (count($itemSets) > 0):
 <div class="item-sets">
     <h2><?php echo $translate('Item sets'); ?></h2>
     <?php foreach ($itemSets as $itemSet): ?>
-    <div class="value"><a href="<?php echo $escape($itemSet->url()); ?>"><?php echo $itemSet->displayTitle(null, ($filterLocale ? $lang : null)); ?></a></div>
+    <?php 
+    $sites = $itemSet->sites();
+    $setUrl = !empty($sites) ? $itemSet->siteUrl(array_values($sites)[0]->slug()) : null;
+    ?>
+    <div class="value">
+        <?php if ($setUrl): ?><a href="<?php echo $escape($setUrl); ?>"><?php endif; ?>
+        <?php echo $itemSet->displayTitle(null, ($filterLocale ? $lang : null)); ?>
+        <?php if ($setUrl): ?></a><?php endif; ?>
+    </div>
     <?php endforeach; ?>
 </div>
 <?php endif; ?>
@@ -55,7 +63,7 @@ if (count($itemSets) > 0):
 <div class="media-list">
     <?php foreach ($itemMedia as $media): ?>
     <div class="value">
-        <a href="<?php echo $escape($media->originalUrl()); ?>" class="resource-link">
+        <a href="<?php echo $escape($media->originalUrl() ?? $media->source()); ?>" class="resource-link">
             <?php echo $this->thumbnail($media, 'square'); ?>
             <span class="resource-name"><?php echo $escape($media->displayTitle()); ?></span>
         </a>
@@ -68,6 +76,7 @@ $subjectValues = $item->displaySubjectValues([
         'page' => $this->params()->fromQuery('page', 1),
         'perPage' => 25,
         'resourceProperty' => $this->params()->fromQuery('resource_property'),
+        'viewName' => 'persistent-identifiers/common/pid-link-wrapper',
     ])
 ?>
 <?php if ($subjectValues): ?>
