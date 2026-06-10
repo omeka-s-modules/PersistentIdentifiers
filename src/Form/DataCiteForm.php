@@ -22,7 +22,7 @@ class DataCiteForm extends Form
             'type' => 'fieldset',
             'name' => 'datacite-configuration',
             'options' => [
-                'label' => 'DataCite Configuration', // @translate
+                'label' => 'DataCite configuration', // @translate
             ],
             'attributes' => [
                 'id' => 'datacite-configuration',
@@ -77,7 +77,7 @@ class DataCiteForm extends Form
             'type' => 'fieldset',
             'name' => 'datacite-required-metadata',
             'options' => [
-                'label' => 'DataCite Required metadata', // @translate
+                'label' => 'DataCite required metadata', // @translate
             ],
             'attributes' => [
                 'id' => 'datacite-required-metadata',
@@ -85,9 +85,9 @@ class DataCiteForm extends Form
             ],
         ]);
 
-        $dataciteMetadataFieldset = $this->get('datacite-required-metadata');
+        $dataciteRequiredMetadata = $this->get('datacite-required-metadata');
 
-        $dataciteMetadataFieldset->add([
+        $dataciteRequiredMetadata->add([
             'name' => 'datacite_title_property',
             'type' => PropertySelect::class,
             'options' => [
@@ -105,7 +105,7 @@ class DataCiteForm extends Form
             ],
         ]);
 
-        $dataciteMetadataFieldset->add([
+        $dataciteRequiredMetadata->add([
             'name' => 'datacite_creators_property',
             'type' => PropertySelect::class,
             'options' => [
@@ -123,7 +123,7 @@ class DataCiteForm extends Form
             ],
         ]);
 
-        $dataciteMetadataFieldset->add([
+        $dataciteRequiredMetadata->add([
             'name' => 'datacite_publisher_property',
             'type' => PropertySelect::class,
             'options' => [
@@ -141,7 +141,7 @@ class DataCiteForm extends Form
             ],
         ]);
 
-        $dataciteMetadataFieldset->add([
+        $dataciteRequiredMetadata->add([
             'name' => 'datacite_publicationYear_property',
             'type' => PropertySelect::class,
             'options' => [
@@ -159,7 +159,7 @@ class DataCiteForm extends Form
             ],
         ]);
 
-        $dataciteMetadataFieldset->add([
+        $dataciteRequiredMetadata->add([
             'name' => 'datacite_resourceTypeGeneral_property',
             'type' => PropertySelect::class,
             'options' => [
@@ -177,6 +177,79 @@ class DataCiteForm extends Form
                 'data-placeholder' => 'Select a property', // @translate
             ],
         ]);
+
+        // DataCite Optional metadata section
+        $this->add([
+            'type' => 'fieldset',
+            'name' => 'datacite-optional-metadata',
+            'options' => [
+                'label' => 'DataCite optional metadata', // @translate
+            ],
+            'attributes' => [
+                'id' => 'datacite-optional-metadata',
+                'class' => 'pid-configuration inactive',
+            ],
+        ]);
+
+        $dataciteRequiredMetadata = $this->get('datacite-optional-metadata');
+
+        $optionalFields = [
+            'datacite_subject_property' => [
+                'label' => 'Subject property', // @translate
+                'info' => 'Local metadata field to map to DataCite subjects.', // @translate
+                'id' => 'datacite-subject-property',
+            ],
+            'datacite_description_property' => [
+                'label' => 'Description property', // @translate
+                'info' => 'Local metadata field to map to DataCite descriptions (sent as descriptionType "Abstract").', // @translate
+                'id' => 'datacite-description-property',
+            ],
+            'datacite_language_property' => [
+                'label' => 'Language property', // @translate
+                'info' => 'Local metadata field to map to DataCite language. Should be a <a target="_blank" href="https://en.wikipedia.org/wiki/IETF_language_tag">BCP-47 language tag</a> (e.g. "en").', // @translate
+                'id' => 'datacite-language-property',
+            ],
+            'datacite_version_property' => [
+                'label' => 'Version property', // @translate
+                'info' => 'Local metadata field to map to DataCite version.', // @translate
+                'id' => 'datacite-version-property',
+            ],
+            'datacite_rights_property' => [
+                'label' => 'Rights property', // @translate
+                'info' => 'Local metadata field to map to DataCite rightsList. URI-type values will also populate rightsUri.', // @translate
+                'id' => 'datacite-rights-property',
+            ],
+            'datacite_size_property' => [
+                'label' => 'Size property', // @translate
+                'info' => 'Local metadata field to map to DataCite sizes (e.g. "1.2 MB", "100 pages").', // @translate
+                'id' => 'datacite-size-property',
+            ],
+            'datacite_format_property' => [
+                'label' => 'Format property', // @translate
+                'info' => 'Local metadata field to map to DataCite formats (e.g. "application/pdf").', // @translate
+                'id' => 'datacite-format-property',
+            ],
+        ];
+
+        foreach ($optionalFields as $name => $field) {
+            $dataciteRequiredMetadata->add([
+                'name' => $name,
+                'type' => PropertySelect::class,
+                'options' => [
+                    'label' => $field['label'],
+                    'info' => $field['info'],
+                    'empty_option' => '',
+                    'term_as_value' => true,
+                    'escape_info' => false,
+                ],
+                'attributes' => [
+                    'id' => $field['id'],
+                    'value' => $this->settings->get($name),
+                    'class' => 'chosen-select',
+                    'data-placeholder' => 'Select a property', // @translate
+                ],
+            ]);
+        }
     }
 
     /**

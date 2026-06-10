@@ -12,7 +12,7 @@ class EZIDForm extends Form
             'type' => 'fieldset',
             'name' => 'ezid-configuration',
             'options' => [
-                'label' => 'EZID Configuration', // @translate
+                'label' => 'EZID configuration', // @translate
             ],
             'attributes' => [
                 'id' => 'ezid-configuration',

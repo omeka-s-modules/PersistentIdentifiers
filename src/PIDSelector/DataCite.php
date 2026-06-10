@@ -31,6 +31,13 @@ class DataCite implements PIDSelectorInterface
         $this->pidPublisher = $this->settings->get('datacite_publisher_property');
         $this->pidPublicationYear = $this->settings->get('datacite_publicationYear_property');
         $this->pidResourceType = $this->settings->get('datacite_resourceTypeGeneral_property');
+        $this->pidSubject = $this->settings->get('datacite_subject_property');
+        $this->pidDescription = $this->settings->get('datacite_description_property');
+        $this->pidLanguage = $this->settings->get('datacite_language_property');
+        $this->pidVersion = $this->settings->get('datacite_version_property');
+        $this->pidRights = $this->settings->get('datacite_rights_property');
+        $this->pidSize = $this->settings->get('datacite_size_property');
+        $this->pidFormat = $this->settings->get('datacite_format_property');
         $this->client = $client;
     }
 
@@ -41,50 +48,15 @@ class DataCite implements PIDSelectorInterface
 
     public function mint($targetURI, $itemRepresentation)
     {
-        // Supply organization-specific mint URL
-        $shoulder = 'https://api.datacite.org/dois';
-
-        // Handle multiple values for creator & title fields
-        $creators = $itemRepresentation->value($this->pidCreators, ['all' => true]);
-        foreach ($creators as $creator) {
-            $pidCreators[] = ['name' => $creator->value()];
-        }
-        $titles = $itemRepresentation->value($this->pidTitle, ['all' => true]);
-        foreach ($titles as $title) {
-            $pidTitles[] = ['title' => $title->value()];
-        }
-        $publisher = $itemRepresentation->value($this->pidPublisher) ? $itemRepresentation->value($this->pidPublisher)->value() : null;
-        $publicationYear = $itemRepresentation->value($this->pidPublicationYear) ? $itemRepresentation->value($this->pidPublicationYear)->value() : null;
-        $type = $itemRepresentation->value($this->pidResourceType) ? $itemRepresentation->value($this->pidResourceType)->value() : null;
-
-        // If any required metadata is missing, don't mint
-        if (!isset($this->pidPrefix, $pidCreators, $pidTitles, $publisher, $publicationYear, $type)) {
+        $attributes = $this->buildAttributes($targetURI, $itemRepresentation);
+        if (!$attributes) {
             return;
         }
 
-        // Build JSON data with DataCite prefix, required metadata & target URI
-        $dataciteArray = [
-            'data' => [
-                'type' => 'dois',
-                'attributes' => [
-                    'event' => 'publish',
-                    'prefix' => $this->pidPrefix,
-                    'creators' => $pidCreators,
-                    'titles' => $pidTitles,
-                    'publisher' => $publisher,
-                    'publicationYear' => $publicationYear,
-                    'types' => [
-                        'resourceTypeGeneral' => $type,
-                    ],
-                    'url' => $targetURI,
-                ],
-            ],
-        ];
-        $dataciteJson = json_encode($dataciteArray);
+        $dataciteJson = json_encode(['data' => ['type' => 'dois', 'attributes' => $attributes]]);
 
-        // Send mint request
         $request = $this->client
-            ->setUri($shoulder)
+            ->setUri('https://api.datacite.org/dois')
             ->setMethod('POST')
             ->setAuth($this->pidUsername, $this->pidPassword)
             ->setRawBody($dataciteJson);
@@ -92,18 +64,38 @@ class DataCite implements PIDSelectorInterface
         $response = $request->send();
         if (!$response->isSuccess()) {
             return;
-        } else {
-            $data = json_decode($response->getBody(), true);
-            return $data['data']['id'];
         }
+        $data = json_decode($response->getBody(), true);
+        return $data['data']['id'];
     }
 
     public function update($existingPID, $targetURI, $itemRepresentation)
     {
-        // Build organization-specific update URL
-        $shoulder = 'https://api.datacite.org/dois/' . $existingPID;
+        $attributes = $this->buildAttributes($targetURI, $itemRepresentation);
+        if (!$attributes) {
+            return;
+        }
 
-        // Handle multiple values for creator & title fields
+        $dataciteJson = json_encode(['data' => ['type' => 'dois', 'attributes' => $attributes]]);
+
+        $request = $this->client
+            ->setUri('https://api.datacite.org/dois/' . $existingPID)
+            ->setMethod('PUT')
+            ->setAuth($this->pidUsername, $this->pidPassword)
+            ->setRawBody($dataciteJson);
+        $request->getRequest()->getHeaders()->addHeaderLine('Content-type: application/json');
+        $response = $request->send();
+        $request->resetParameters();
+        if (!$response->isSuccess()) {
+            return;
+        }
+        $data = json_decode($response->getBody(), true);
+        return $data['data']['id'];
+    }
+
+    private function buildAttributes($targetURI, $itemRepresentation)
+    {
+        // Required fields
         $creators = $itemRepresentation->value($this->pidCreators, ['all' => true]);
         foreach ($creators as $creator) {
             $pidCreators[] = ['name' => $creator->value()];
@@ -116,47 +108,75 @@ class DataCite implements PIDSelectorInterface
         $publicationYear = $itemRepresentation->value($this->pidPublicationYear) ? $itemRepresentation->value($this->pidPublicationYear)->value() : null;
         $type = $itemRepresentation->value($this->pidResourceType) ? $itemRepresentation->value($this->pidResourceType)->value() : null;
 
-        // If any required metadata is missing, don't mint
         if (!isset($this->pidPrefix, $pidCreators, $pidTitles, $publisher, $publicationYear, $type)) {
-            return;
+            return null;
         }
 
-        // Build JSON data with DataCite prefix, required metadata & target URI
-        $dataciteArray = [
-            'data' => [
-                'type' => 'dois',
-                'attributes' => [
-                    'event' => 'publish',
-                    'prefix' => $this->pidPrefix,
-                    'creators' => $pidCreators,
-                    'titles' => $pidTitles,
-                    'publisher' => $publisher,
-                    'publicationYear' => $publicationYear,
-                    'types' => [
-                        'resourceTypeGeneral' => $type,
-                    ],
-                    'url' => $targetURI,
-                ],
-            ],
+        $attributes = [
+            'event' => 'publish',
+            'prefix' => $this->pidPrefix,
+            'creators' => $pidCreators,
+            'titles' => $pidTitles,
+            'publisher' => $publisher,
+            'publicationYear' => $publicationYear,
+            'types' => ['resourceTypeGeneral' => $type],
+            'url' => $targetURI,
         ];
-        $dataciteJson = json_encode($dataciteArray);
 
-        // Send update request
-        $request = $this->client
-            ->setUri($shoulder)
-            ->setMethod('PUT')
-            ->setAuth($this->pidUsername, $this->pidPassword)
-            ->setRawBody($dataciteJson);
-        $request->getRequest()->getHeaders()->addHeaderLine('Content-type: application/json');
-        $response = $request->send();
-        // Clear parameters for batch minting/editing
-        $request->resetParameters();
-        if (!$response->isSuccess()) {
-            return;
-        } else {
-            $data = json_decode($response->getBody(), true);
-            return $data['data']['id'];
+        // Optional fields — only included when configured and the item has values
+        if ($this->pidSubject) {
+            $vals = $itemRepresentation->value($this->pidSubject, ['all' => true]);
+            if ($vals) {
+                $attributes['subjects'] = array_map(fn($v) => ['subject' => $v->value()], $vals);
+            }
         }
+
+        if ($this->pidDescription) {
+            $vals = $itemRepresentation->value($this->pidDescription, ['all' => true]);
+            if ($vals) {
+                $attributes['descriptions'] = array_map(
+                    fn($v) => ['description' => $v->value(), 'descriptionType' => 'Abstract'],
+                    $vals
+                );
+            }
+        }
+
+        if ($this->pidLanguage && ($val = $itemRepresentation->value($this->pidLanguage))) {
+            $attributes['language'] = $val->value();
+        }
+
+        if ($this->pidVersion && ($val = $itemRepresentation->value($this->pidVersion))) {
+            $attributes['version'] = $val->value();
+        }
+
+        if ($this->pidRights) {
+            $vals = $itemRepresentation->value($this->pidRights, ['all' => true]);
+            if ($vals) {
+                $attributes['rightsList'] = array_map(function ($v) {
+                    $right = ['rights' => $v->value()];
+                    if ($v->uri()) {
+                        $right['rightsUri'] = $v->uri();
+                    }
+                    return $right;
+                }, $vals);
+            }
+        }
+
+        if ($this->pidSize) {
+            $vals = $itemRepresentation->value($this->pidSize, ['all' => true]);
+            if ($vals) {
+                $attributes['sizes'] = array_map(fn($v) => $v->value(), $vals);
+            }
+        }
+
+        if ($this->pidFormat) {
+            $vals = $itemRepresentation->value($this->pidFormat, ['all' => true]);
+            if ($vals) {
+                $attributes['formats'] = array_map(fn($v) => $v->value(), $vals);
+            }
+        }
+
+        return $attributes;
     }
 
     public function delete($pidToDelete)

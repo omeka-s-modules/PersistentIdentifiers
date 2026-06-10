@@ -12,7 +12,7 @@ class LocalARKForm extends Form
             'type' => 'fieldset',
             'name' => 'local-ark-configuration',
             'options' => [
-                'label' => 'Local ARK Configuration', // @translate
+                'label' => 'Local ARK configuration', // @translate
             ],
             'attributes' => [
                 'id' => 'local-ark-configuration',

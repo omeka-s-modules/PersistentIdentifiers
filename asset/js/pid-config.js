@@ -13,6 +13,7 @@ $(document).ready(function () {
         hide('#ezid-configuration');
         hide('#datacite-configuration');
         hide('#datacite-required-metadata');
+        hide('#datacite-optional-metadata');
         hide('#local-ark-configuration');
         $("input[name^='ezid']").prop("disabled", true);
         $("input[name^='datacite']").prop("disabled", true);
@@ -31,6 +32,7 @@ $(document).ready(function () {
         hideAll();
         show('#datacite-configuration');
         show('#datacite-required-metadata');
+        show('#datacite-optional-metadata');
         $("input[name^='datacite']").prop("disabled", false);
         $("select[name^='datacite']").prop("disabled", false);
         $("select[id^='datacite']").attr('required', 'required');
@@ -55,6 +57,7 @@ $(document).ready(function () {
             hideAll();
             show('#datacite-configuration');
             show('#datacite-required-metadata');
+            show('#datacite-optional-metadata');
             $("input[name^='datacite']").prop("disabled", false);
             $("select[name^='datacite']").prop("disabled", false);
             $("select[id^='datacite']").attr('required', 'required');

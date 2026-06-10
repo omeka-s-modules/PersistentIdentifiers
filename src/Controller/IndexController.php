@@ -65,6 +65,13 @@ class IndexController extends AbstractActionController
         $dataciteData['datacite-required-metadata']['datacite_publisher_property'] = $this->settings->get('datacite_publisher_property');
         $dataciteData['datacite-required-metadata']['datacite_publicationYear_property'] = $this->settings->get('datacite_publicationYear_property');
         $dataciteData['datacite-required-metadata']['datacite_resourceTypeGeneral_property'] = $this->settings->get('datacite_resourceTypeGeneral_property');
+        $dataciteData['datacite-optional-metadata']['datacite_subject_property'] = $this->settings->get('datacite_subject_property');
+        $dataciteData['datacite-optional-metadata']['datacite_description_property'] = $this->settings->get('datacite_description_property');
+        $dataciteData['datacite-optional-metadata']['datacite_language_property'] = $this->settings->get('datacite_language_property');
+        $dataciteData['datacite-optional-metadata']['datacite_version_property'] = $this->settings->get('datacite_version_property');
+        $dataciteData['datacite-optional-metadata']['datacite_rights_property'] = $this->settings->get('datacite_rights_property');
+        $dataciteData['datacite-optional-metadata']['datacite_size_property'] = $this->settings->get('datacite_size_property');
+        $dataciteData['datacite-optional-metadata']['datacite_format_property'] = $this->settings->get('datacite_format_property');
 
         $dataciteForm->setData($dataciteData);
 
@@ -116,6 +123,13 @@ class IndexController extends AbstractActionController
                 $this->settings->set('datacite_publisher_property', $dataciteFormData['datacite-required-metadata']['datacite_publisher_property']);
                 $this->settings->set('datacite_publicationYear_property', $dataciteFormData['datacite-required-metadata']['datacite_publicationYear_property']);
                 $this->settings->set('datacite_resourceTypeGeneral_property', $dataciteFormData['datacite-required-metadata']['datacite_resourceTypeGeneral_property']);
+                $this->settings->set('datacite_subject_property', $dataciteFormData['datacite-optional-metadata']['datacite_subject_property']);
+                $this->settings->set('datacite_description_property', $dataciteFormData['datacite-optional-metadata']['datacite_description_property']);
+                $this->settings->set('datacite_language_property', $dataciteFormData['datacite-optional-metadata']['datacite_language_property']);
+                $this->settings->set('datacite_version_property', $dataciteFormData['datacite-optional-metadata']['datacite_version_property']);
+                $this->settings->set('datacite_rights_property', $dataciteFormData['datacite-optional-metadata']['datacite_rights_property']);
+                $this->settings->set('datacite_size_property', $dataciteFormData['datacite-optional-metadata']['datacite_size_property']);
+                $this->settings->set('datacite_format_property', $dataciteFormData['datacite-optional-metadata']['datacite_format_property']);
             }
 
             $localArkForm->setData($this->params()->fromPost());
