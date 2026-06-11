@@ -1,13 +1,12 @@
 $(document).ready(function () {
-    let selectingElement;
+    const ezidRadio = $('input[type="radio"][value="ezid"]');
+    const dataciteRadio = $('input[type="radio"][value="datacite"]');
+    const localArkRadio = $('input[type="radio"][value="localark"]');
 
-    ezidRadio = $('input[type="radio"][value="ezid"]');
-    dataciteRadio = $('input[type="radio"][value="datacite"]');
-    localArkRadio = $('input[type="radio"][value="localark"]');
-
-    // Show or hide config settings by selected PID service
-    const show = selector => $('#content').find(selector).removeClass('inactive');
-    const hide = selector => $('#content').find(selector).addClass('inactive');
+    const show = selector => $(selector).removeClass('inactive');
+    const hide = selector => $(selector).addClass('inactive');
+    const disableSection = selector => $(selector).find(':input').prop('disabled', true).removeAttr('required');
+    const enableSection = selector => $(selector).find(':input').prop('disabled', false);
 
     const hideAll = () => {
         hide('#ezid-configuration');
@@ -15,60 +14,45 @@ $(document).ready(function () {
         hide('#datacite-required-metadata');
         hide('#datacite-optional-metadata');
         hide('#local-ark-configuration');
-        $("input[name^='ezid']").prop("disabled", true);
-        $("input[name^='datacite']").prop("disabled", true);
-        $("select[name^='datacite']").prop("disabled", true);
-        $("select[id^='datacite']").removeAttr('required');
-        $("input[name^='local-ark']").prop("disabled", true);
+        disableSection('#ezid-configuration');
+        disableSection('#datacite-configuration');
+        disableSection('#datacite-required-metadata');
+        disableSection('#datacite-optional-metadata');
+        disableSection('#local-ark-configuration');
     };
 
-    if (ezidRadio.prop('checked')) {
+    const activateEzid = () => {
         hideAll();
         show('#ezid-configuration');
-        $("input[name^='ezid']").prop("disabled", false);
-    }
+        enableSection('#ezid-configuration');
+        $('#ezid-configuration').find('[required-original="true"]').attr('required', 'required');
+    };
 
-    if (dataciteRadio.prop('checked')) {
+    const activateDatacite = () => {
         hideAll();
         show('#datacite-configuration');
         show('#datacite-required-metadata');
         show('#datacite-optional-metadata');
-        $("input[name^='datacite']").prop("disabled", false);
-        $("select[name^='datacite']").prop("disabled", false);
-        $("select[id^='datacite']").attr('required', 'required');
-    }
+        enableSection('#datacite-configuration');
+        enableSection('#datacite-required-metadata');
+        enableSection('#datacite-optional-metadata');
+        $('#datacite-required-metadata').find('select').attr('required', 'required');
+    };
 
-    if (localArkRadio.prop('checked')) {
+    const activateLocalArk = () => {
         hideAll();
         show('#local-ark-configuration');
-        $("input[name^='local-ark']").prop("disabled", false);
-    }
+        enableSection('#local-ark-configuration');
+        $('#local-ark-naan').attr('required', 'required');
+    };
 
-    ezidRadio.change(function() {
-        if (this.checked) {
-            hideAll();
-            show('#ezid-configuration');
-            $("input[name^='ezid']").prop("disabled", false);
-        }
-    });
+    hideAll();
 
-    dataciteRadio.change(function() {
-        if (this.checked) {
-            hideAll();
-            show('#datacite-configuration');
-            show('#datacite-required-metadata');
-            show('#datacite-optional-metadata');
-            $("input[name^='datacite']").prop("disabled", false);
-            $("select[name^='datacite']").prop("disabled", false);
-            $("select[id^='datacite']").attr('required', 'required');
-        }
-    });
+    if (ezidRadio.prop('checked')) activateEzid();
+    if (dataciteRadio.prop('checked')) activateDatacite();
+    if (localArkRadio.prop('checked')) activateLocalArk();
 
-    localArkRadio.change(function() {
-        if (this.checked) {
-            hideAll();
-            show('#local-ark-configuration');
-            $("input[name^='local-ark']").prop("disabled", false);
-        }
-    });
+    ezidRadio.on('change', function () { if (this.checked) activateEzid(); });
+    dataciteRadio.on('change', function () { if (this.checked) activateDatacite(); });
+    localArkRadio.on('change', function () { if (this.checked) activateLocalArk(); });
 });
