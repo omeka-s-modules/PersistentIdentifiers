@@ -47,6 +47,7 @@ class IndexController extends AbstractActionController
             'pid_service' => $this->settings->get('pid_service'),
             'pid_assign_all' => $this->settings->get('pid_assign_all'),
             'existing_pid_fields' => $this->settings->get('existing_pid_fields'),
+            'pid_store_property' => $this->settings->get('pid_store_property'),
         ]);
 
         // Get/set ezid settings
@@ -96,6 +97,7 @@ class IndexController extends AbstractActionController
                 $this->settings->set('pid_service', $formData['pid_service']);
                 $this->settings->set('pid_assign_all', $formData['pid_assign_all']);
                 $this->settings->set('existing_pid_fields', $formData['existing_pid_fields']);
+                $this->settings->set('pid_store_property', $formData['pid_store_property']);
             }
 
             $ezidForm->setData($this->params()->fromPost());
@@ -282,7 +284,9 @@ class IndexController extends AbstractActionController
         } else {
             // Save to DB
             $this->storePID($addPID, $itemID);
-
+            if ($this->settings->get('pid_store_property')) {
+                $this->storePIDInMetadata($addPID, $itemID);
+            }
             return $addPID;
         }
     }
@@ -317,6 +321,33 @@ class IndexController extends AbstractActionController
             $PIDrecord = $content[0];
             $response = $this->api->update('pid_items', $PIDrecord->id(), $json);
         }
+    }
+
+    // Write PID to a metadata property on the item, if configured
+    public function storePIDInMetadata($pid, $itemID)
+    {
+        $storeProperty = $this->settings->get('pid_store_property');
+
+        [$prefix, $localName] = explode(':', $storeProperty, 2);
+        $vocabs = $this->api->search('vocabularies', ['prefix' => $prefix])->getContent();
+        if (empty($vocabs)) {
+            return;
+        }
+        $properties = $this->api->search('properties', [
+            'vocabulary_id' => $vocabs[0]->id(),
+            'local_name' => $localName,
+        ])->getContent();
+        if (empty($properties)) {
+            return;
+        }
+
+        $this->api->update('items', $itemID, [
+            $storeProperty => [[
+                'type' => 'literal',
+                'property_id' => $properties[0]->id(),
+                '@value' => $pid,
+            ]],
+        ], [], ['isPartial' => true, 'collectionAction' => 'append']);
     }
 
     // Delete PID from Omeka database

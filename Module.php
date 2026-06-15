@@ -237,6 +237,70 @@ class Module extends AbstractModule
                 }
             }
         );
+
+        // If pid_store_property set, re-inject into record during hydration
+        // Since 'Mint PID' button is done via JS and invisible to initial form load
+        $sharedEventManager->attach(
+            'Omeka\Api\Adapter\ItemAdapter',
+            'api.hydrate.post',
+            function (Event $event) {
+                $services = $this->getServiceLocator();
+                $settings = $services->get('Omeka\Settings');
+                $storeProperty = $settings->get('pid_store_property');
+                if (!$storeProperty) {
+                    return;
+                }
+
+                $request = $event->getParam('request');
+                if ($request->getOperation() !== 'update') {
+                    return;
+                }
+
+                $item = $event->getParam('entity');
+                $api = $services->get('Omeka\ApiManager');
+                $pidResults = $api->search('pid_items', ['item_id' => $item->getId()])->getContent();
+                if (empty($pidResults)) {
+                    return;
+                }
+                $pid = $pidResults[0]->getPID();
+
+                [$prefix, $localName] = explode(':', $storeProperty, 2);
+                $vocabs = $api->search('vocabularies', ['prefix' => $prefix])->getContent();
+                if (empty($vocabs)) {
+                    return;
+                }
+                $properties = $api->search('properties', [
+                    'vocabulary_id' => $vocabs[0]->id(),
+                    'local_name' => $localName,
+                ])->getContent();
+                if (empty($properties)) {
+                    return;
+                }
+                $propertyId = $properties[0]->id();
+
+                foreach ($item->getValues() as $existing) {
+                    if ($existing->getProperty()->getId() === $propertyId
+                        && $existing->getValue() === $pid
+                    ) {
+                        return;
+                    }
+                }
+
+                $em = $services->get('Omeka\EntityManager');
+                $propertyEntity = $em->find('Omeka\Entity\Property', $propertyId);
+                if (!$propertyEntity) {
+                    return;
+                }
+
+                $value = new \Omeka\Entity\Value();
+                $value->setType('literal');
+                $value->setResource($item);
+                $value->setProperty($propertyEntity);
+                $value->setValue($pid);
+                $value->setIsPublic(true);
+                $em->persist($value);
+            }
+        );
     }
 
     public function mintPID($itemRepresentation, $extractOnly = false)
@@ -272,14 +336,41 @@ class Module extends AbstractModule
 
         if (!$addPID) {
             return;
-        } else {
-            // Save to DB
-            $json = [
-                'o:item' => ['o:id' => $itemID],
-                'pid' => $addPID,
-            ];
+        }
 
-            $api->create('pid_items', $json);
+        // Save to DB
+        $api->create('pid_items', [
+            'o:item' => ['o:id' => $itemID],
+            'pid' => $addPID,
+        ]);
+
+        // Write to metadata property if configured
+        $storeProperty = $settings->get('pid_store_property');
+        if ($storeProperty) {
+            // Avoid duplicates
+            foreach ($itemRepresentation->value($storeProperty, ['all' => true]) as $value) {
+                if ((string) $value === $addPID) {
+                    return;
+                }
+            }
+
+            [$prefix, $localName] = explode(':', $storeProperty, 2);
+            $vocabs = $api->search('vocabularies', ['prefix' => $prefix])->getContent();
+            if (!empty($vocabs)) {
+                $properties = $api->search('properties', [
+                    'vocabulary_id' => $vocabs[0]->id(),
+                    'local_name' => $localName,
+                ])->getContent();
+                if (!empty($properties)) {
+                    $api->update('items', $itemID, [
+                        $storeProperty => [[
+                            'type' => 'literal',
+                            'property_id' => $properties[0]->id(),
+                            '@value' => $addPID,
+                        ]],
+                    ], [], ['isPartial' => true, 'collectionAction' => 'append']);
+                }
+            }
         }
     }
 
