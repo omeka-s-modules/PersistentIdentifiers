@@ -1,17 +1,19 @@
 # Persistent Identifiers
 
-Create/import & assign persistent identifiers (PIDs) to Omeka S items. PIDs can be assigned at either item creation or through later batch edit, and will resolve to a stable, non-site-specific page for each item.
+The Persistent Identifiers module allows users to create or import persistent identifiers (PIDs) and assign them to Omeka S items. These PIDs can be made ("minted") and assigned at item creation, via the item editing screen, or during batch edits. They can be removed individually or in batches. Existing PIDs may be extracted from item metadata. PIDs can also be minted and assigned in bulk during an item import process. 
 
-The PID module is designed in a flexible way to better connect with various PID service APIs for PID creation or import. The module can currently connect to the following PID APIs (i.e. all other PID services will require additional code):
+Once assigned, accessing an item's PID in-browser resolves to a stable, non-site-specific landing page containing the item's metadata, media, and any sites the item is assigned to.
 
-- [ARKs](https://arks.org) via [EZID](https://ezid.cdlib.org)
+This module currently creates [Digital Object Identifiers (DOIs)](https://www.doi.org), commonly used for scholarly publications and resources, and [Archival Resource Keys (ARKs)](https://www.arks.org), for archival materials. 
+
+To create these identifiers, Omeka users will require an account with an external service provider. 
+
+The PID module is designed in a flexible way to connect with various PID service APIs for PID creation or import. The module can currently connect to the following PID APIs (i.e. all other PID services will require additional code):
+
+- [ARKs](https://arks.org) locally, or via [EZID](https://ezid.cdlib.org) (EZID is not currently accepting new users)
 - [DOIs](https://www.doi.org) via [DataCite](https://datacite.org)
 
 See the [Omeka S user manual](http://omeka.org/s/docs/user-manual/modules/persistentidentifiers/) for user documentation.
-
-## Installation
-
-See general end user documentation for [Installing a module](http://omeka.org/s/docs/user-manual/modules/#installing-modules)
 
 # Copyright
 
