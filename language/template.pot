@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-13 14:19-0800\n"
+"POT-Creation-Date: 2026-06-15 11:30-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: Module.php:140 view/persistent-identifiers/index/item-landing-page.phtml:27
+#: Module.php:144 view/persistent-identifiers/index/item-landing-page.phtml:27
 msgid "Persistent Identifier"
 msgstr ""
 
@@ -46,61 +46,71 @@ msgstr ""
 msgid "Confirm Remove PID"
 msgstr ""
 
-#: view/persistent-identifiers/index/index.phtml:9
+#: view/persistent-identifiers/index/index.phtml:10
 msgid "Persistent Identifiers"
 msgstr ""
 
-#: view/persistent-identifiers/index/item-landing-page.phtml:74
+#: view/persistent-identifiers/index/item-landing-page.phtml:91
+msgid "Invalid Identifier"
+msgstr ""
+
+#: view/persistent-identifiers/index/item-landing-page.phtml:94
+#, php-format
+msgid "%1$s does not appear to be a valid ARK identifier."
+msgstr ""
+
+#: view/persistent-identifiers/index/item-landing-page.phtml:98
+#: view/persistent-identifiers/index/item-landing-page.phtml:116
+msgid "Back to Home Page"
+msgstr ""
+
+#: view/persistent-identifiers/index/item-landing-page.phtml:106
 #, php-format
 msgid ""
 "The resource with persistent identifier %1$s and local ID %2$s has been "
 "removed from this Omeka S instance."
 msgstr ""
 
-#: view/persistent-identifiers/index/item-landing-page.phtml:79
+#: view/persistent-identifiers/index/item-landing-page.phtml:111
 #, php-format
 msgid ""
 "The resource with local ID %1$s has been removed from this Omeka S instance."
 msgstr ""
 
-#: view/persistent-identifiers/index/item-landing-page.phtml:84
-msgid "Back to Home Page"
-msgstr ""
-
-#: Module.php:67
+#: Module.php:64
 msgid ""
 "Mint & assign PID from chosen service. (Note: PID is immediately assigned to "
 "item)"
 msgstr ""
 
-#: Module.php:87
+#: Module.php:84
 msgid "Assign Persistent Identifier"
 msgstr ""
 
-#: Module.php:88
+#: Module.php:85
 msgid "Mint & assign PID from chosen service."
 msgstr ""
 
-#: Module.php:163
+#: Module.php:167
 msgid ""
 "Mint & assign PID to any item that does not already have one, or remove any "
 "existing PIDs."
 msgstr ""
 
-#: Module.php:165
+#: Module.php:169
 msgid "Mint PIDs"
 msgstr ""
 
-#: Module.php:166
+#: Module.php:170
 msgid "Remove PIDs"
 msgstr ""
 
-#: Module.php:167
+#: Module.php:171
 msgid "[No action]"
 msgstr ""
 
 #: src/Form/EZIDForm.php:15
-msgid "EZID Configuration"
+msgid "EZID configuration"
 msgstr ""
 
 #: src/Form/EZIDForm.php:29
@@ -128,14 +138,38 @@ msgstr ""
 msgid "EZID Password"
 msgstr ""
 
+#: src/Form/LocalARKForm.php:15
+msgid "Local ARK configuration"
+msgstr ""
+
+#: src/Form/LocalARKForm.php:29
+msgid "NAAN"
+msgstr ""
+
+#: src/Form/LocalARKForm.php:30
+msgid ""
+"Your organization's <a target=\"_blank\" href=\"https://arks.org/about/ark-"
+"naans-and-systems/\">Name Assigning Authority Number (NAAN)</a> as assigned "
+"by the ARK Alliance. Example: 12345."
+msgstr ""
+
+#: src/Form/LocalARKForm.php:43
+msgid "Shoulder"
+msgstr ""
+
+#: src/Form/LocalARKForm.php:44
+msgid ""
+"Optional two character betanumeric prefix appended after the NAAN. Useful "
+"for sub-dividing ARKs by project or unit (for example). Generated "
+"automatically if left blank."
+msgstr ""
+
 #: src/Form/ConfigForm.php:32
 msgid "Assign PIDs to new items"
 msgstr ""
 
 #: src/Form/ConfigForm.php:33
-msgid ""
-"Mint and assign Persistent Identifiers (PIDs) to all newly created or "
-"imported items."
+msgid "Mint and assign PIDs to all newly created or imported items."
 msgstr ""
 
 #: src/Form/ConfigForm.php:44
@@ -144,91 +178,101 @@ msgstr ""
 
 #: src/Form/ConfigForm.php:45
 msgid ""
-"List of fields (such as dc.identifier), separated by commas, that may "
-"contain existing PID values. If found during import or PID mint, existing "
-"PID will be assigned to item."
+"List of Omeka S property terms (e.g. dcterms:identifier), separated by "
+"commas, that may contain PID values. If found, existing PID will be assigned "
+"instead of minting a new PID. Order matters: the first PID found from listed "
+"fields will be assigned to item."
 msgstr ""
 
-#: src/Form/DataCiteForm.php:26
-msgid "DataCite Configuration"
+#: src/Form/ConfigForm.php:56
+msgid "Optional field to store PIDs"
 msgstr ""
 
-#: src/Form/DataCiteForm.php:40
+#: src/Form/ConfigForm.php:57
+msgid ""
+"If set, PID will also be written to this metadata property within the item."
+msgstr ""
+
+#: src/Form/DataCiteForm.php:25
+msgid "DataCite configuration"
+msgstr ""
+
+#: src/Form/DataCiteForm.php:39
 msgid "Repository DOI Prefix"
 msgstr ""
 
-#: src/Form/DataCiteForm.php:41
+#: src/Form/DataCiteForm.php:40
 msgid ""
 "The <a target=\"_blank\" href=\"https://support.datacite.org/docs/doi-"
 "basics#prefix\">DOI prefix</a> associated with your DataCite repository. "
 "Example: 10.82157"
 msgstr ""
 
-#: src/Form/DataCiteForm.php:54
+#: src/Form/DataCiteForm.php:53
 msgid "DataCite Repository ID"
 msgstr ""
 
-#: src/Form/DataCiteForm.php:55
+#: src/Form/DataCiteForm.php:54
 msgid ""
 "Unique identifier assigned to your DataCite repository. Example: XQZU.RBBDXB"
 msgstr ""
 
-#: src/Form/DataCiteForm.php:67
+#: src/Form/DataCiteForm.php:66
 msgid "DataCite Password"
 msgstr ""
 
-#: src/Form/DataCiteForm.php:68
+#: src/Form/DataCiteForm.php:67
 msgid ""
 "Password associated with DataCite repository (note that this is different "
 "from your DataCite Member password)."
 msgstr ""
 
-#: src/Form/DataCiteForm.php:81
-msgid "DataCite Required metadata"
+#: src/Form/DataCiteForm.php:80
+msgid "DataCite required metadata"
 msgstr ""
 
-#: src/Form/DataCiteForm.php:95
+#: src/Form/DataCiteForm.php:94
 msgid "Title property"
 msgstr ""
 
-#: src/Form/DataCiteForm.php:96
+#: src/Form/DataCiteForm.php:95
 msgid ""
 "Local metadata field value to assign to required DataCite title property."
 msgstr ""
 
-#: src/Form/DataCiteForm.php:113
+#: src/Form/DataCiteForm.php:112
 msgid "Creators property"
 msgstr ""
 
-#: src/Form/DataCiteForm.php:114
+#: src/Form/DataCiteForm.php:113
 msgid ""
 "Local metadata field value to assign to required DataCite creators property."
 msgstr ""
 
-#: src/Form/DataCiteForm.php:131
+#: src/Form/DataCiteForm.php:130
 msgid "Publisher property"
 msgstr ""
 
-#: src/Form/DataCiteForm.php:132
+#: src/Form/DataCiteForm.php:131
 msgid ""
 "Local metadata field value to assign to required DataCite publisher property."
 msgstr ""
 
-#: src/Form/DataCiteForm.php:149
+#: src/Form/DataCiteForm.php:148
 msgid "Publication Year property"
 msgstr ""
 
-#: src/Form/DataCiteForm.php:150
+#: src/Form/DataCiteForm.php:149
 msgid ""
 "Local metadata field value to assign to required DataCite publicationYear "
 "property. Must be in YYYY format."
 msgstr ""
 
-#: src/Form/DataCiteForm.php:167
+#: src/Form/DataCiteForm.php:166
 msgid "Resource Type General property"
 msgstr ""
 
-#: src/Form/DataCiteForm.php:168
+#: src/Form/DataCiteForm.php:167
 msgid ""
 "Local metadata field value to assign to required DataCite "
 "resourceTypeGeneral property. Must match a <a target=\"_blank\" "
@@ -237,10 +281,84 @@ msgid ""
 "resourceTypeGeneral vocabulary</a> value exactly."
 msgstr ""
 
-#: src/PIDSelector/DataCite.php:38
+#: src/Form/DataCiteForm.php:186
+msgid "DataCite optional metadata"
+msgstr ""
+
+#: src/Form/DataCiteForm.php:198
+msgid "Subject property"
+msgstr ""
+
+#: src/Form/DataCiteForm.php:199
+msgid "Local metadata field to map to DataCite subjects."
+msgstr ""
+
+#: src/Form/DataCiteForm.php:203
+msgid "Description property"
+msgstr ""
+
+#: src/Form/DataCiteForm.php:204
+msgid ""
+"Local metadata field to map to DataCite descriptions (sent as "
+"descriptionType \"Abstract\")."
+msgstr ""
+
+#: src/Form/DataCiteForm.php:208
+msgid "Language property"
+msgstr ""
+
+#: src/Form/DataCiteForm.php:209
+msgid ""
+"Local metadata field to map to DataCite language. Should be a <a "
+"target=\"_blank\" href=\"https://en.wikipedia.org/wiki/"
+"IETF_language_tag\">BCP-47 language tag</a> (e.g. \"en\")."
+msgstr ""
+
+#: src/Form/DataCiteForm.php:213
+msgid "Version property"
+msgstr ""
+
+#: src/Form/DataCiteForm.php:214
+msgid "Local metadata field to map to DataCite version."
+msgstr ""
+
+#: src/Form/DataCiteForm.php:218
+msgid "Rights property"
+msgstr ""
+
+#: src/Form/DataCiteForm.php:219
+msgid ""
+"Local metadata field to map to DataCite rightsList. URI-type values will "
+"also populate rightsUri."
+msgstr ""
+
+#: src/Form/DataCiteForm.php:223
+msgid "Size property"
+msgstr ""
+
+#: src/Form/DataCiteForm.php:224
+msgid ""
+"Local metadata field to map to DataCite sizes (e.g. \"1.2 MB\", \"100 "
+"pages\")."
+msgstr ""
+
+#: src/Form/DataCiteForm.php:228
+msgid "Format property"
+msgstr ""
+
+#: src/Form/DataCiteForm.php:229
+msgid ""
+"Local metadata field to map to DataCite formats (e.g. \"application/pdf\")."
+msgstr ""
+
+#: src/PIDSelector/DataCite.php:46
 msgid "DataCite"
 msgstr ""
 
-#: src/PIDSelector/EZID.php:33
+#: src/PIDSelector/EZID.php:34
 msgid "EZID"
+msgstr ""
+
+#: src/PIDSelector/LocalARK.php:44
+msgid "Local ARK"
 msgstr ""
