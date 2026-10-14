@@ -168,19 +168,36 @@ class IndexController extends AbstractActionController
     public function pidEditAction()
     {
         $response = $this->getResponse();
-        $target = $_POST['target'] ?? null;
-        $itemID = $_POST['itemID'] ?? null;
+        if (!$this->getRequest()->isPost()) {
+            return $response->setStatusCode(405);
+        }
+
+        // Only users who may update the item may mint or remove its PID.
+        $itemID = $this->params()->fromPost('itemID');
+        try {
+            $item = $this->api()->read('items', $itemID)->getContent();
+        } catch (ApiException\ExceptionInterface $e) {
+            return $response->setStatusCode(404);
+        }
+        if (!$item->userIsAllowed('update')) {
+            return $response->setStatusCode(403);
+        }
 
         $pidSelector = $this->services->get('PersistentIdentifiers\PIDSelectorManager');
         $pidSelectedService = $this->settings->get('pid_service');
         $pidService = $pidSelector->get($pidSelectedService);
 
-        if (isset($_POST['toRemovePID'])) {
-            $deletedPID = $this->removePID($pidService, $_POST['toRemovePID'], $itemID);
+        if ($this->params()->fromPost('toRemovePID')) {
+            // Remove the PID stored for this item, not one supplied by the client.
+            $PIDcontent = $this->api->search('pid_items', ['item_id' => $item->id()])->getContent();
+            if (empty($PIDcontent)) {
+                return $response;
+            }
+            $deletedPID = $this->removePID($pidService, $PIDcontent[0]->getPID(), $item->id());
             return $response->setContent($deletedPID);
         } else {
-            // Mint and store new PID
-            $mintedPID = $this->mintPID($pidService, $target, $itemID);
+            // Mint and store new PID targeting this item's API URL.
+            $mintedPID = $this->mintPID($pidService, $item->apiUrl(), $item->id());
             return $response->setContent($mintedPID);
         }
     }

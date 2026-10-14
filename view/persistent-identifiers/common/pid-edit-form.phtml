@@ -11,14 +11,14 @@ $translate = $this->plugin('translate');
     if (!empty($content)) {
         $PIDrecord = $content[0];
         $PIDvalue = $PIDrecord->getPID();
-        echo 'data-item-pid="' . $PIDvalue . '"'; 
+        echo 'data-item-pid="' . $this->escapeHtml($PIDvalue) . '"'; 
     } else {
         $PIDvalue = '';
     }
     ?>
     data-pid-edit-url="<?php echo $this->escapeHtml($this->url('admin/persistent-identifiers/pid-edit')); ?>"
     data-item-api-url="<?php echo $this->escapeHtml($itemAPIURL); ?>"
-    data-item-id="<?php echo $itemID; ?>">
+    data-item-id="<?php echo $this->escapeHtml($itemID); ?>">
     <div class="pid-display"></div>
     <button type="button" class="pid-form-mint"><?php echo $translate('Mint PID'); ?></button>
     <button type="button" class="pid-form-remove red button inactive"><?php echo $translate('Remove PID'); ?></button>
@@ -33,8 +33,8 @@ $translate = $this->plugin('translate');
             <h3><?php echo $translate('Remove PID'); ?></h3>
             <p class="error"><?php echo sprintf(
                 $translate('<strong>Warning</strong>: this action will remove <strong>%s</strong> from item <strong>%s</strong>, breaking any incoming Omeka URI links, and cannot be undone.'),
-                $PIDvalue,
-                $itemID
+                $this->escapeHtml($PIDvalue),
+                $this->escapeHtml($itemID)
             ); ?></p>
             <p><?php echo $translate('Are you sure you would like to remove the PID from this item?'); ?></p>
             <button type="button" class="pid-form-delete"><?php echo $translate('Confirm Remove PID'); ?></button>

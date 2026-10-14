@@ -52,5 +52,20 @@ class PIDItemAdapter extends AbstractEntityAdapter
         if (isset($data['pid'])) {
             $entity->setPID($data['pid']);
         }
+
+        // The current user must be able to update the item this PID is bound to.
+        if ($entity->getItem()) {
+            $this->authorize($entity->getItem(), 'update');
+        }
+    }
+
+    public function validateEntity(EntityInterface $entity, ErrorStore $errorStore)
+    {
+        if (!$entity->getItem()) {
+            $errorStore->addError('o:item', 'A PID must be attached to an item.'); // @translate
+        }
+        if (!$entity->getPID()) {
+            $errorStore->addError('pid', 'A PID must have a value.'); // @translate
+        }
     }
 }

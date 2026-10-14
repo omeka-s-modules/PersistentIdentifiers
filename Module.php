@@ -21,15 +21,38 @@ class Module extends AbstractModule
         parent::onBootstrap($event);
 
         $acl = $this->getServiceLocator()->get('Omeka\Acl');
-        // Allow all users to access item pages
+        // Allow all users to look up PID records.
         $acl->allow(
             null,
             ['PersistentIdentifiers\Api\Adapter\PIDItemAdapter',
                 'PersistentIdentifiers\Entity\PidItem',
-            ]
+            ],
+            ['read', 'search']
+        );
+        // Allow PID records to be written only by users who may update the
+        // associated item. On create the entity has no item until hydration,
+        // so the adapter checks the target item in hydrate().
+        $acl->allow(
+            null,
+            'PersistentIdentifiers\Api\Adapter\PIDItemAdapter',
+            ['create', 'update', 'delete']
+        );
+        $acl->allow(null, 'PersistentIdentifiers\Entity\PidItem', 'create');
+        $acl->allow(
+            null,
+            'PersistentIdentifiers\Entity\PidItem',
+            ['update', 'delete'],
+            new Permissions\Assertion\CanUpdateItemAssertion
         );
         // Allow all visitors to view PID generic item landing page.
         $acl->allow(null, 'PersistentIdentifiers\Controller\Index', 'item-landing-page');
+        // Allow item editors to mint/remove PIDs from the item edit form.
+        // pidEditAction() checks that the user may update the item.
+        $acl->allow(
+            ['author', 'reviewer', 'editor'],
+            'PersistentIdentifiers\Controller\Index',
+            'pid-edit'
+        );
         $acl->allow(null, 'PersistentIdentifiers\Controller\Index', 'ark-landing-page');
     }
 
