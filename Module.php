@@ -20,6 +20,11 @@ class Module extends AbstractModule
     {
         parent::onBootstrap($event);
 
+        // Hide PID records whose item the current user cannot see.
+        $em = $this->getServiceLocator()->get('Omeka\EntityManager');
+        $filter = $em->getFilters()->getFilter('resource_visibility');
+        $filter->addRelatedEntity('PersistentIdentifiers\Entity\PidItem', 'item_id');
+
         $acl = $this->getServiceLocator()->get('Omeka\Acl');
         // Allow all users to look up PID records.
         $acl->allow(

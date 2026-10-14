@@ -9,7 +9,7 @@ class PIDItemRepresentation extends AbstractEntityRepresentation
     {
         return [
             'pid' => $this->resource->getPID(),
-            'o:item' => $this->resource->getItem(),
+            'o:item' => $this->item()->getReference(),
         ];
     }
 
