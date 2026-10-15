@@ -4,16 +4,16 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # 
 # Translators:
-# Rubén Alcaraz Martínez <rubenalcarazmartinez@gmail.com>, 2025
+# Rubén Alcaraz Martínez <rubenalcarazmartinez@gmail.com>, 2026
 # 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-15 11:30-0700\n"
+"POT-Creation-Date: 2026-10-15 12:05-0700\n"
 "PO-Revision-Date: 2022-06-29 18:17+0000\n"
-"Last-Translator: Rubén Alcaraz Martínez <rubenalcarazmartinez@gmail.com>, 2025\n"
+"Last-Translator: Rubén Alcaraz Martínez <rubenalcarazmartinez@gmail.com>, 2026\n"
 "Language-Team: Catalan (Spain) (https://app.transifex.com/omeka/teams/14184/ca_ES/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -21,7 +21,7 @@ msgstr ""
 "Language: ca_ES\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: Module.php:144 view/persistent-identifiers/index/item-landing-page.phtml:27
+#: Module.php:172 view/persistent-identifiers/index/item-landing-page.phtml:27
 msgid "Persistent Identifier"
 msgstr "Persistent Identifier"
 
@@ -59,12 +59,12 @@ msgstr "Persistent Identifiers"
 
 #: view/persistent-identifiers/index/item-landing-page.phtml:91
 msgid "Invalid Identifier"
-msgstr ""
+msgstr "Identificador incorrecte"
 
 #: view/persistent-identifiers/index/item-landing-page.phtml:94
 #, php-format
 msgid "%1$s does not appear to be a valid ARK identifier."
-msgstr ""
+msgstr "%1$s no sembla un identificador ARK vàlid."
 
 #: view/persistent-identifiers/index/item-landing-page.phtml:98
 #: view/persistent-identifiers/index/item-landing-page.phtml:116
@@ -88,7 +88,7 @@ msgstr ""
 "El recurs amb l'identificar local %1$s s'ha suprimit d'aquesta instància de "
 "l'Omeka S."
 
-#: Module.php:64
+#: Module.php:92
 msgid ""
 "Mint & assign PID from chosen service. (Note: PID is immediately assigned to"
 " item)"
@@ -96,15 +96,15 @@ msgstr ""
 "Genera i assigna un PID des del servei seleccionat. (Nota: el PID s'assigna "
 "immediatament al recurs)"
 
-#: Module.php:84
+#: Module.php:112
 msgid "Assign Persistent Identifier"
 msgstr "Assigna un identificador persistent"
 
-#: Module.php:85
+#: Module.php:113
 msgid "Mint & assign PID from chosen service."
 msgstr "Genera i assigna un PID des del servei seleccionat"
 
-#: Module.php:167
+#: Module.php:195
 msgid ""
 "Mint & assign PID to any item that does not already have one, or remove any "
 "existing PIDs."
@@ -112,21 +112,21 @@ msgstr ""
 "Genera i assigna un PID a qualsevol recus que encara no en tingui, o bé "
 "elimina els PIDs existents."
 
-#: Module.php:169
+#: Module.php:197
 msgid "Mint PIDs"
 msgstr "Mint PIDs"
 
-#: Module.php:170
+#: Module.php:198
 msgid "Remove PIDs"
 msgstr "Suprimeix els PID"
 
-#: Module.php:171
+#: Module.php:199
 msgid "[No action]"
 msgstr "[Cap acció]"
 
 #: src/Form/EZIDForm.php:15
 msgid "EZID configuration"
-msgstr ""
+msgstr "Configuració EZID"
 
 #: src/Form/EZIDForm.php:29
 msgid "NAAN & Shoulder Namespace"
@@ -160,11 +160,11 @@ msgstr "Contrasenya EZID"
 
 #: src/Form/LocalARKForm.php:15
 msgid "Local ARK configuration"
-msgstr ""
+msgstr "Configuració ARK local"
 
 #: src/Form/LocalARKForm.php:29
 msgid "NAAN"
-msgstr ""
+msgstr "NAAN"
 
 #: src/Form/LocalARKForm.php:30
 msgid ""
@@ -172,10 +172,14 @@ msgid ""
 "naans-and-systems/\">Name Assigning Authority Number (NAAN)</a> as assigned "
 "by the ARK Alliance. Example: 12345."
 msgstr ""
+"Número de l’autoritat <a target=\"_blank\" "
+"href=\"https://arks.org/about/ark-naans-and-systems/\">assignadora de noms "
+"(NAAN)</a> de la vostra organització, atorgat per l'ARK Alliance. Exemple: "
+"12345. "
 
 #: src/Form/LocalARKForm.php:43
 msgid "Shoulder"
-msgstr ""
+msgstr "Prefix"
 
 #: src/Form/LocalARKForm.php:44
 msgid ""
@@ -183,6 +187,9 @@ msgid ""
 "for sub-dividing ARKs by project or unit (for example). Generated "
 "automatically if left blank."
 msgstr ""
+"Prefix betanumèric opcional de dos caràcters que s'afegeix després del NAAN."
+" És útil, per exemple, per subdividir els ARK per projecte o unitat. Si es "
+"deixa en blanc, es genera automàticament."
 
 #: src/Form/ConfigForm.php:32
 msgid "Assign PIDs to new items"
@@ -190,7 +197,7 @@ msgstr "Assigna PIDs als nous recursos"
 
 #: src/Form/ConfigForm.php:33
 msgid "Mint and assign PIDs to all newly created or imported items."
-msgstr ""
+msgstr "Genera i assigna PID a tots els recursos nous o importats."
 
 #: src/Form/ConfigForm.php:44
 msgid "Fields with existing PIDs"
@@ -203,19 +210,26 @@ msgid ""
 " instead of minting a new PID. Order matters: the first PID found from "
 "listed fields will be assigned to item."
 msgstr ""
+"Llista de termes de propietat d'Omeka S (p. ex., dcterms:identifier), "
+"separats per comes, que poden contenir valors de PID. Si se'n troba un, "
+"s'assignarà el PID existent en lloc de generar-ne un de nou. L'ordre és "
+"important: s'assignarà al recurs el primer PID que es trobi en els camps "
+"indicats."
 
 #: src/Form/ConfigForm.php:56
 msgid "Optional field to store PIDs"
-msgstr ""
+msgstr "Camp opcional per emmagatzemar PIDs"
 
 #: src/Form/ConfigForm.php:57
 msgid ""
 "If set, PID will also be written to this metadata property within the item."
 msgstr ""
+"Si es defineix, el PID també s'escriurà en aquesta propietat de metadades "
+"del recurs."
 
 #: src/Form/DataCiteForm.php:25
 msgid "DataCite configuration"
-msgstr ""
+msgstr "Configuració DataCite"
 
 #: src/Form/DataCiteForm.php:39
 msgid "Repository DOI Prefix"
@@ -256,7 +270,7 @@ msgstr ""
 
 #: src/Form/DataCiteForm.php:80
 msgid "DataCite required metadata"
-msgstr ""
+msgstr "Metadades DataCite obligatòries"
 
 #: src/Form/DataCiteForm.php:94
 msgid "Title property"
@@ -322,29 +336,33 @@ msgstr ""
 
 #: src/Form/DataCiteForm.php:186
 msgid "DataCite optional metadata"
-msgstr ""
+msgstr "Metadades DataCite opcionals"
 
 #: src/Form/DataCiteForm.php:198
 msgid "Subject property"
-msgstr ""
+msgstr "Propietat de matèria"
 
 #: src/Form/DataCiteForm.php:199
 msgid "Local metadata field to map to DataCite subjects."
 msgstr ""
+"Camp de metadades local que s'ha de fer correspondre amb les matèries de "
+"DataCite."
 
 #: src/Form/DataCiteForm.php:203
 msgid "Description property"
-msgstr ""
+msgstr "Propietat de la descripció"
 
 #: src/Form/DataCiteForm.php:204
 msgid ""
 "Local metadata field to map to DataCite descriptions (sent as "
 "descriptionType \"Abstract\")."
 msgstr ""
+"Camp de metadades local que s'ha de fer correspondre amb les descripcions de"
+" DataCite (enviades amb el valor \"Abstract\" a descriptionType)."
 
 #: src/Form/DataCiteForm.php:208
 msgid "Language property"
-msgstr ""
+msgstr "Propietat de l'idioma"
 
 #: src/Form/DataCiteForm.php:209
 msgid ""
@@ -353,43 +371,55 @@ msgid ""
 "href=\"https://en.wikipedia.org/wiki/IETF_language_tag\">BCP-47 language "
 "tag</a> (e.g. \"en\")."
 msgstr ""
+"Camp de metadades local que s'ha de fer correspondre amb la llengua de "
+"DataCite. Ha de ser una <a target=\"_blank\" "
+"href=\"https://en.wikipedia.org/wiki/IETF_language_tag\">etiqueta de llengua"
+" BCP-47</a> (p. ex., \"en\")."
 
 #: src/Form/DataCiteForm.php:213
 msgid "Version property"
-msgstr ""
+msgstr "Propietat de la versió"
 
 #: src/Form/DataCiteForm.php:214
 msgid "Local metadata field to map to DataCite version."
 msgstr ""
+"Camp de metadades local que s'ha de fer correspondre amb la versió de "
+"DataCite."
 
 #: src/Form/DataCiteForm.php:218
 msgid "Rights property"
-msgstr ""
+msgstr "Propietat dels drets"
 
 #: src/Form/DataCiteForm.php:219
 msgid ""
 "Local metadata field to map to DataCite rightsList. URI-type values will "
 "also populate rightsUri."
 msgstr ""
+"Camp de metadades local que s'ha de fer correspondre amb rightsList de "
+"DataCite. Els valors de tipus URI també emplenaran rightsUri."
 
 #: src/Form/DataCiteForm.php:223
 msgid "Size property"
-msgstr ""
+msgstr "Propietat de les dimensions o extensió"
 
 #: src/Form/DataCiteForm.php:224
 msgid ""
 "Local metadata field to map to DataCite sizes (e.g. \"1.2 MB\", \"100 "
 "pages\")."
 msgstr ""
+"Camp de metadades local que s'ha de fer correspondre amb les mides de "
+"DataCite (p. ex., \"1,2 MB\" o \"100 pàgines\")."
 
 #: src/Form/DataCiteForm.php:228
 msgid "Format property"
-msgstr ""
+msgstr "Propietat del format"
 
 #: src/Form/DataCiteForm.php:229
 msgid ""
 "Local metadata field to map to DataCite formats (e.g. \"application/pdf\")."
 msgstr ""
+"Camp de metadades local que s'ha de fer correspondre amb els formats de "
+"DataCite (p. ex., application/pdf)."
 
 #: src/PIDSelector/DataCite.php:46
 msgid "DataCite"
@@ -401,4 +431,12 @@ msgstr "EZID"
 
 #: src/PIDSelector/LocalARK.php:44
 msgid "Local ARK"
+msgstr "ARK local"
+
+#: src/Api/Adapter/PIDItemAdapter.php:65
+msgid "A PID must be attached to an item."
+msgstr ""
+
+#: src/Api/Adapter/PIDItemAdapter.php:68
+msgid "A PID must have a value."
 msgstr ""

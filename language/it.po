@@ -4,16 +4,16 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # 
 # Translators:
-# Giorgio Comai <g@giorgiocomai.eu>, 2022
+# Giorgio Comai <g@giorgiocomai.eu>, 2026
 # 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-15 11:30-0700\n"
+"POT-Creation-Date: 2026-10-15 12:05-0700\n"
 "PO-Revision-Date: 2022-06-29 18:17+0000\n"
-"Last-Translator: Giorgio Comai <g@giorgiocomai.eu>, 2022\n"
+"Last-Translator: Giorgio Comai <g@giorgiocomai.eu>, 2026\n"
 "Language-Team: Italian (https://app.transifex.com/omeka/teams/14184/it/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -21,7 +21,7 @@ msgstr ""
 "Language: it\n"
 "Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
 
-#: Module.php:144 view/persistent-identifiers/index/item-landing-page.phtml:27
+#: Module.php:172 view/persistent-identifiers/index/item-landing-page.phtml:27
 msgid "Persistent Identifier"
 msgstr "Identificatore persistente"
 
@@ -59,12 +59,12 @@ msgstr "Identificatori persistenti"
 
 #: view/persistent-identifiers/index/item-landing-page.phtml:91
 msgid "Invalid Identifier"
-msgstr ""
+msgstr "Identificatore non valido"
 
 #: view/persistent-identifiers/index/item-landing-page.phtml:94
 #, php-format
 msgid "%1$s does not appear to be a valid ARK identifier."
-msgstr ""
+msgstr "%1$s non sembra essere un identificatore ARK valido."
 
 #: view/persistent-identifiers/index/item-landing-page.phtml:98
 #: view/persistent-identifiers/index/item-landing-page.phtml:116
@@ -88,7 +88,7 @@ msgstr ""
 "La risorsa con ID locale %1$s è stata eliminata da questa istanza di Omeka "
 "S."
 
-#: Module.php:64
+#: Module.php:92
 msgid ""
 "Mint & assign PID from chosen service. (Note: PID is immediately assigned to"
 " item)"
@@ -96,15 +96,15 @@ msgstr ""
 "Crea e assegna PID dal servizio selezionato (Nota: il PID verrà "
 "immediatamente assegnato al contenuto)"
 
-#: Module.php:84
+#: Module.php:112
 msgid "Assign Persistent Identifier"
 msgstr "Assegna identificatore persistente (PID)"
 
-#: Module.php:85
+#: Module.php:113
 msgid "Mint & assign PID from chosen service."
 msgstr "Crea e assegna PID dal servizio selezionato"
 
-#: Module.php:167
+#: Module.php:195
 msgid ""
 "Mint & assign PID to any item that does not already have one, or remove any "
 "existing PIDs."
@@ -112,21 +112,21 @@ msgstr ""
 "Crea e assegna PID ad ogni contenuto che non ne ha già uno, o elimina PID "
 "preesistenti."
 
-#: Module.php:169
+#: Module.php:197
 msgid "Mint PIDs"
 msgstr "Crea PID"
 
-#: Module.php:170
+#: Module.php:198
 msgid "Remove PIDs"
 msgstr "Elimina PID"
 
-#: Module.php:171
+#: Module.php:199
 msgid "[No action]"
 msgstr "[Nessuna azione]"
 
 #: src/Form/EZIDForm.php:15
 msgid "EZID configuration"
-msgstr ""
+msgstr "Configurazione EZID"
 
 #: src/Form/EZIDForm.php:29
 msgid "NAAN & Shoulder Namespace"
@@ -160,11 +160,11 @@ msgstr "Password EZID"
 
 #: src/Form/LocalARKForm.php:15
 msgid "Local ARK configuration"
-msgstr ""
+msgstr "Configurazione ARK locale"
 
 #: src/Form/LocalARKForm.php:29
 msgid "NAAN"
-msgstr ""
+msgstr "NAAN"
 
 #: src/Form/LocalARKForm.php:30
 msgid ""
@@ -172,6 +172,9 @@ msgid ""
 "naans-and-systems/\">Name Assigning Authority Number (NAAN)</a> as assigned "
 "by the ARK Alliance. Example: 12345."
 msgstr ""
+"Il NAAN (<a target=\"_blank\" href=\"https://arks.org/about/ark-naans-and-"
+"systems/\">Name Assigning Authority Number </a>) della tua organizzazione "
+"come assegnato dalla ARK Alliance. Ad esempio: 12345."
 
 #: src/Form/LocalARKForm.php:43
 msgid "Shoulder"
@@ -190,7 +193,7 @@ msgstr "Assegna PID a nuovi contenuti"
 
 #: src/Form/ConfigForm.php:33
 msgid "Mint and assign PIDs to all newly created or imported items."
-msgstr ""
+msgstr "Crea ed assegna PID a tutti i contenuti creati o importati"
 
 #: src/Form/ConfigForm.php:44
 msgid "Fields with existing PIDs"
@@ -206,16 +209,18 @@ msgstr ""
 
 #: src/Form/ConfigForm.php:56
 msgid "Optional field to store PIDs"
-msgstr ""
+msgstr "Campo opzionale per i PID"
 
 #: src/Form/ConfigForm.php:57
 msgid ""
 "If set, PID will also be written to this metadata property within the item."
 msgstr ""
+"Se impostato, i PID saranno scritti anche in questa proprietà dei metadata "
+"del contenuto."
 
 #: src/Form/DataCiteForm.php:25
 msgid "DataCite configuration"
-msgstr ""
+msgstr "Configurazione DataCite"
 
 #: src/Form/DataCiteForm.php:39
 msgid "Repository DOI Prefix"
@@ -256,7 +261,7 @@ msgstr ""
 
 #: src/Form/DataCiteForm.php:80
 msgid "DataCite required metadata"
-msgstr ""
+msgstr "Metadata obbligatori per DataCite"
 
 #: src/Form/DataCiteForm.php:94
 msgid "Title property"
@@ -325,19 +330,19 @@ msgstr ""
 
 #: src/Form/DataCiteForm.php:186
 msgid "DataCite optional metadata"
-msgstr ""
+msgstr "Metadata opzionali per DataCite"
 
 #: src/Form/DataCiteForm.php:198
 msgid "Subject property"
-msgstr ""
+msgstr "Proprietà del soggetto"
 
 #: src/Form/DataCiteForm.php:199
 msgid "Local metadata field to map to DataCite subjects."
-msgstr ""
+msgstr "Campo dei metadata locali corrispondente ai soggetti DataCite."
 
 #: src/Form/DataCiteForm.php:203
 msgid "Description property"
-msgstr ""
+msgstr "Proprietà della descrizione"
 
 #: src/Form/DataCiteForm.php:204
 msgid ""
@@ -347,7 +352,7 @@ msgstr ""
 
 #: src/Form/DataCiteForm.php:208
 msgid "Language property"
-msgstr ""
+msgstr "Proprietà della lingua"
 
 #: src/Form/DataCiteForm.php:209
 msgid ""
@@ -367,7 +372,7 @@ msgstr ""
 
 #: src/Form/DataCiteForm.php:218
 msgid "Rights property"
-msgstr ""
+msgstr "Proprietà dei diritti"
 
 #: src/Form/DataCiteForm.php:219
 msgid ""
@@ -377,7 +382,7 @@ msgstr ""
 
 #: src/Form/DataCiteForm.php:223
 msgid "Size property"
-msgstr ""
+msgstr "Proprietà della dimensione"
 
 #: src/Form/DataCiteForm.php:224
 msgid ""
@@ -387,12 +392,14 @@ msgstr ""
 
 #: src/Form/DataCiteForm.php:228
 msgid "Format property"
-msgstr ""
+msgstr "Proprietà del formato"
 
 #: src/Form/DataCiteForm.php:229
 msgid ""
 "Local metadata field to map to DataCite formats (e.g. \"application/pdf\")."
 msgstr ""
+"Campo dei metadata locali da associare ai formati DataCite (ad esempio "
+"\"application/pdf\")."
 
 #: src/PIDSelector/DataCite.php:46
 msgid "DataCite"
@@ -404,4 +411,12 @@ msgstr "EZID"
 
 #: src/PIDSelector/LocalARK.php:44
 msgid "Local ARK"
+msgstr "ARK locale"
+
+#: src/Api/Adapter/PIDItemAdapter.php:65
+msgid "A PID must be attached to an item."
+msgstr ""
+
+#: src/Api/Adapter/PIDItemAdapter.php:68
+msgid "A PID must have a value."
 msgstr ""
