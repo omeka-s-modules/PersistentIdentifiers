@@ -8,6 +8,7 @@ $(document).ready(function () {
     selectingElement = $('#content').find('.pid-form-element');
     itemID = selectingElement.data('itemId');
     pidEditURL = selectingElement.data('pidEditUrl');
+    csrfToken = selectingElement.data('csrf');
     
     // Grab and display PID attribute, if it exists
     if (selectingElement.data('itemPid')) {
@@ -44,7 +45,8 @@ $(document).ready(function () {
             url: pidEditURL,
             data: { 
                 'target' : pidTarget,
-                'itemID' : itemID
+                'itemID' : itemID,
+                'csrf' : csrfToken
             },
             success: function(data) {
                 if (!data) {
@@ -73,7 +75,8 @@ $(document).ready(function () {
             url: pidEditURL,
             data: { 
                 'itemID' : itemID,
-                'toRemovePID' : toRemovePID
+                'toRemovePID' : toRemovePID,
+                'csrf' : csrfToken
             },
             success: function(data) {
                 if (!data) {

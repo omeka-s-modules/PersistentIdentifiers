@@ -52,6 +52,9 @@ return [
         ],
     ],
     'form_elements' => [
+        'invokables' => [
+            'PersistentIdentifiers\Form\PIDEditForm' => PersistentIdentifiers\Form\PIDEditForm::class,
+        ],
         'factories' => [
             'PersistentIdentifiers\Form\ConfigForm' => 'PersistentIdentifiers\Service\Form\ConfigFormFactory',
             'PersistentIdentifiers\Form\EZIDForm' => 'PersistentIdentifiers\Service\Form\EZIDFormFactory',
@@ -60,8 +63,8 @@ return [
         ],
     ],
     'view_helpers' => [
-        'invokables' => [
-            'PIDEditor' => 'PersistentIdentifiers\View\Helper\FormPIDEditor',
+        'factories' => [
+            'PIDEditor' => PersistentIdentifiers\Service\ViewHelper\FormPIDEditorFactory::class,
         ],
         'delegators' => [
             'Laminas\Form\View\Helper\FormElement' => [

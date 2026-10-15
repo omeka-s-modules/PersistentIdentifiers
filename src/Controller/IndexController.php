@@ -5,6 +5,7 @@ use PersistentIdentifiers\Form\ConfigForm;
 use PersistentIdentifiers\Form\EZIDForm;
 use PersistentIdentifiers\Form\DataCiteForm;
 use PersistentIdentifiers\Form\LocalARKForm;
+use PersistentIdentifiers\Form\PIDEditForm;
 use PersistentIdentifiers\PIDSelector\LocalARK;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\ServiceManager\ServiceLocatorInterface;
@@ -170,6 +171,13 @@ class IndexController extends AbstractActionController
         $response = $this->getResponse();
         if (!$this->getRequest()->isPost()) {
             return $response->setStatusCode(405);
+        }
+
+        // Reject requests without a valid CSRF token before contacting the PID service.
+        $form = $this->getForm(PIDEditForm::class);
+        $form->setData($this->params()->fromPost());
+        if (!$form->isValid()) {
+            return $response->setStatusCode(403);
         }
 
         // Only users who may update the item may mint or remove its PID.
