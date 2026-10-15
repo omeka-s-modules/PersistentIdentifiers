@@ -20,8 +20,7 @@ $(document).ready(function () {
     
     // Handle the button that mints/creates a PID via selected service and assigns to object.
     $('#content').on('click', '.pid-form-mint', function (e) {
-        pidTarget = selectingElement.data('itemApiUrl');
-        mintPID(pidEditURL, pidTarget, itemID);
+        mintPID(pidEditURL, itemID);
     });
     
     // Handle the button that opens PID removal confirmation sidebar.
@@ -38,13 +37,12 @@ $(document).ready(function () {
     /**
      * Mint a PID using API of selected service.
      */
-    function mintPID(pidEditURL, pidTarget, itemID)
+    function mintPID(pidEditURL, itemID)
     {
         $.ajax({
             type: 'POST',
             url: pidEditURL,
             data: { 
-                'target' : pidTarget,
                 'itemID' : itemID,
                 'csrf' : csrfToken
             },

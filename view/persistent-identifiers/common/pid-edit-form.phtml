@@ -18,7 +18,6 @@ $translate = $this->plugin('translate');
     ?>
     data-pid-edit-url="<?php echo $this->escapeHtml($this->url('admin/persistent-identifiers/pid-edit')); ?>"
     data-csrf="<?php echo $this->escapeHtml($csrfToken); ?>"
-    data-item-api-url="<?php echo $this->escapeHtml($itemAPIURL); ?>"
     data-item-id="<?php echo $this->escapeHtml($itemID); ?>">
     <div class="pid-display"></div>
     <button type="button" class="pid-form-mint"><?php echo $translate('Mint PID'); ?></button>

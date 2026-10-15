@@ -30,7 +30,6 @@ class FormPIDEditor extends AbstractHelper
         $form = $this->formElementManager->get(PIDEditForm::class);
         return $view->partial('persistent-identifiers/common/pid-edit-form', [
             'itemID' => $resource->id(),
-            'itemAPIURL' => $resource->apiUrl(),
             'csrfToken' => $form->get('csrf')->getValue(),
         ]);
     }
